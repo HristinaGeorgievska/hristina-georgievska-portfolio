@@ -59,7 +59,7 @@ const MasonryGallery = () => {
 
   return (
     <>
-      <div className="columns-1 md:columns-2 lg:columns-3 gap-4 px-4 md:px-8 lg:px-12 py-8">
+      <div className="max-w-5xl mx-auto columns-1 md:columns-2 lg:columns-3 gap-4 px-4 py-8">
         {galleryImages.map((image, index) => (
           <div
             key={index}
