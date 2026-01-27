@@ -44,50 +44,66 @@ const Navigation = ({ activeSection, onSectionChange }: NavigationProps) => {
 
         {/* Mobile Hamburger Button */}
         <button
-          onClick={() => setIsOpen(true)}
-          className="md:hidden p-2 text-foreground"
-          aria-label="Open menu"
+          onClick={() => setIsOpen(!isOpen)}
+          className="md:hidden p-2 text-foreground relative z-[60]"
+          aria-label={isOpen ? "Close menu" : "Open menu"}
         >
-          <Menu size={24} />
+          <div className="relative w-6 h-6">
+            <span
+              className={`absolute left-0 block h-0.5 w-6 bg-foreground transition-all duration-300 ease-out ${
+                isOpen ? "top-3 rotate-45" : "top-1"
+              }`}
+            />
+            <span
+              className={`absolute left-0 top-3 block h-0.5 w-6 bg-foreground transition-all duration-300 ease-out ${
+                isOpen ? "opacity-0 scale-0" : "opacity-100 scale-100"
+              }`}
+            />
+            <span
+              className={`absolute left-0 block h-0.5 w-6 bg-foreground transition-all duration-300 ease-out ${
+                isOpen ? "top-3 -rotate-45" : "top-5"
+              }`}
+            />
+          </div>
         </button>
       </nav>
 
       {/* Full Screen Mobile Menu Overlay */}
-      {isOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
-          {/* Backdrop with opacity */}
-          <div 
-            className="absolute inset-0 bg-background/95 backdrop-blur-sm"
-            onClick={() => setIsOpen(false)}
-          />
-          
-          {/* Close Button */}
-          <button
-            onClick={() => setIsOpen(false)}
-            className="absolute top-6 right-6 p-2 text-foreground z-50"
-            aria-label="Close menu"
-          >
-            <X size={28} />
-          </button>
+      <div
+        className={`fixed inset-0 z-50 md:hidden transition-all duration-500 ease-out ${
+          isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+        }`}
+      >
+        {/* Backdrop with opacity */}
+        <div
+          className={`absolute inset-0 bg-background/95 backdrop-blur-sm transition-all duration-500 ${
+            isOpen ? "opacity-100" : "opacity-0"
+          }`}
+          onClick={() => setIsOpen(false)}
+        />
 
-          {/* Centered Menu Content */}
-          <div className="relative z-10 flex flex-col items-center justify-center h-full gap-8 animate-fade-in">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => handleNavClick(item.id)}
-                className={`text-2xl tracking-widest transition-all duration-300 hover:text-foreground ${
-                  activeSection === item.id
-                    ? "text-foreground font-medium"
-                    : "text-muted-foreground"
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
+        {/* Centered Menu Content */}
+        <div className="relative z-10 flex flex-col items-center justify-center h-full gap-8">
+          {navItems.map((item, index) => (
+            <button
+              key={item.id}
+              onClick={() => handleNavClick(item.id)}
+              className={`text-2xl tracking-widest transition-all duration-300 hover:text-foreground ${
+                activeSection === item.id
+                  ? "text-foreground font-medium"
+                  : "text-muted-foreground"
+              }`}
+              style={{
+                transform: isOpen ? "translateY(0)" : "translateY(20px)",
+                opacity: isOpen ? 1 : 0,
+                transition: `all 0.4s ease-out ${index * 0.1 + 0.2}s`,
+              }}
+            >
+              {item.label}
+            </button>
+          ))}
         </div>
-      )}
+      </div>
     </>
   );
 };
