@@ -24,9 +24,6 @@ const CommercialSection = () => {
   return (
     <section className="py-16 px-4 md:px-8">
       <div className="max-w-5xl mx-auto">
-        <h2 className="font-serif text-2xl md:text-3xl tracking-wider text-foreground mb-10 text-center">
-          Commercial Work
-        </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {commercialProjects.map((project, index) => (
