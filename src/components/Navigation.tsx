@@ -14,7 +14,7 @@ const Navigation = ({ activeSection, onSectionChange }: NavigationProps) => {
   ];
 
   return (
-    <nav className="flex justify-center py-6 border-b border-border">
+    <nav className="flex justify-center py-6">
       <ul className="flex gap-6 md:gap-10">
         {navItems.map((item) => (
           <li key={item.id}>
