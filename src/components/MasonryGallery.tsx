@@ -16,20 +16,22 @@ import landscape3 from "@/assets/gallery/landscape-3.jpg";
 interface GalleryImage {
   src: string;
   alt: string;
-  span?: "tall" | "wide" | "normal";
+  client?: string;
+  name?: string;
+  photographer?: string;
 }
 
 const galleryImages: GalleryImage[] = [
-  { src: portrait1, alt: "Beauty portrait with smoky eyes", span: "tall" },
-  { src: landscape1, alt: "Artistic avant-garde makeup", span: "normal" },
-  { src: portrait2, alt: "Elegant fashion editorial with red dress", span: "tall" },
-  { src: portrait4, alt: "Bold creative colorful makeup", span: "normal" },
-  { src: landscape2, alt: "Natural glowing skin beauty shot", span: "normal" },
-  { src: portrait3, alt: "Bridal makeup editorial", span: "tall" },
-  { src: portrait6, alt: "Colorful eyeshadow close-up", span: "normal" },
-  { src: landscape3, alt: "High fashion editorial", span: "normal" },
-  { src: portrait5, alt: "Evening makeup with metallic eyeshadow", span: "tall" },
-  { src: portrait7, alt: "Luxury beauty editorial", span: "tall" },
+  { src: portrait1, alt: "Beauty portrait with smoky eyes", client: "Elle Magazine", name: "Smoky Elegance", photographer: "Anna Lee" },
+  { src: landscape1, alt: "Artistic avant-garde makeup", client: "Artistic Vision", name: "Avant-Garde", photographer: "Michael Chen" },
+  { src: portrait2, alt: "Elegant fashion editorial with red dress", client: "Fashion Weekly", name: "Red Passion", photographer: "Sophie Martin" },
+  { src: portrait4, alt: "Bold creative colorful makeup", client: "Creative Arts", name: "Color Burst", photographer: "David Park" },
+  { src: landscape2, alt: "Natural glowing skin beauty shot", client: "Skin Care Co", name: "Natural Glow", photographer: "Emma Wilson" },
+  { src: portrait3, alt: "Bridal makeup editorial", client: "Bridal Magazine", name: "Wedding Dreams", photographer: "James Liu" },
+  { src: portrait6, alt: "Colorful eyeshadow close-up", client: "Beauty Trends", name: "Eye Candy", photographer: "Lisa Park" },
+  { src: landscape3, alt: "High fashion editorial", client: "High Fashion", name: "Runway Ready", photographer: "Marc Johnson" },
+  { src: portrait5, alt: "Evening makeup with metallic eyeshadow", client: "Evening Luxe", name: "Metallic Night", photographer: "Sarah Kim" },
+  { src: portrait7, alt: "Luxury beauty editorial", client: "Luxury Living", name: "Pure Luxury", photographer: "Chris Lee" },
 ];
 
 const MasonryGallery = () => {
@@ -59,21 +61,36 @@ const MasonryGallery = () => {
 
   return (
     <>
-      <div className="max-w-5xl mx-auto columns-1 md:columns-2 lg:columns-3 gap-4 px-4 py-8">
-        {galleryImages.map((image, index) => (
+      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 py-8">
+        {galleryImages.map((item, index) => (
           <div
             key={index}
-            className="mb-4 break-inside-avoid cursor-pointer group"
+            className="cursor-pointer group relative aspect-[11/15] overflow-hidden rounded-lg shadow-md"
             onClick={() => openLightbox(index)}
           >
-            <div className="relative overflow-hidden rounded-xl">
-              <img
-                src={image.src}
-                alt={image.alt}
-                className="w-full h-auto object-cover transition-all duration-500 group-hover:scale-105"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-all duration-500" />
+            {/* Image */}
+            <img
+              src={item.src}
+              alt={item.name || item.client || "Portfolio ukázka - Master Your Face"}
+              className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-90"
+              loading="lazy"
+            />
+
+            {/* Hover text overlay */}
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/70 to-transparent p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              <div className="text-white flex flex-col justify-end gap-2">
+                {item.client && (
+                  <p className="text-xs font-semibold uppercase tracking-widest opacity-90">
+                    {item.client}
+                  </p>
+                )}
+
+                {item.name && <p className="text-2xl font-bold">{item.name}</p>}
+
+                {item.photographer && (
+                  <p className="text-xs font-medium opacity-70">Foto: {item.photographer}</p>
+                )}
+              </div>
             </div>
           </div>
         ))}
