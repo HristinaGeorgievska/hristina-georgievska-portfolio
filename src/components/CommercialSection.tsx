@@ -38,31 +38,35 @@ const CommercialSection = () => {
 
   return (
     <>
-      <div className="max-w-5xl mx-auto columns-1 md:columns-2 lg:columns-3 gap-4 px-4 py-8">
-        {commercialImages.map((image, index) => (
+      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 py-8">
+        {commercialImages.map((item, index) => (
           <div
             key={index}
-            className="mb-4 break-inside-avoid cursor-pointer group"
+            className="cursor-pointer group relative aspect-[11/15] overflow-hidden rounded-lg shadow-md"
             onClick={() => openLightbox(index)}
           >
-            <div className="relative overflow-hidden rounded-xl">
-              <img
-                src={image.src}
-                alt={image.alt}
-                className="w-full h-auto object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-90"
-                loading="lazy"
-              />
-              {/* Bottom overlay with gradient */}
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/80 via-foreground/40 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                <p className="text-xs font-semibold uppercase tracking-widest text-background opacity-90">
-                  {image.client}
-                </p>
-                <p className="text-2xl font-bold text-background">
-                  {image.name}
-                </p>
-                <p className="text-xs font-medium text-background opacity-70">
-                  {image.photographer}
-                </p>
+            {/* Image */}
+            <img
+              src={item.src}
+              alt={item.name || item.client || "Portfolio ukázka - Master Your Face"}
+              className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-90"
+              loading="lazy"
+            />
+
+            {/* Hover text overlay */}
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/70 to-transparent p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              <div className="text-white flex flex-col justify-end gap-2">
+                {item.client && (
+                  <p className="text-xs font-semibold uppercase tracking-widest opacity-90">
+                    {item.client}
+                  </p>
+                )}
+
+                {item.name && <p className="text-2xl font-bold">{item.name}</p>}
+
+                {item.photographer && (
+                  <p className="text-xs font-medium opacity-70">Foto: {item.photographer}</p>
+                )}
               </div>
             </div>
           </div>
