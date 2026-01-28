@@ -6,9 +6,9 @@ import portrait2 from "@/assets/gallery/portrait-2.jpg";
 import portrait5 from "@/assets/gallery/portrait-5.jpg";
 
 const commercialImages = [
-  { src: portrait2, alt: "Harper's Bazaar Editorial" },
-  { src: portrait1, alt: "Vogue Beauty Campaign" },
-  { src: portrait5, alt: "L'Oréal Paris Commercial" },
+  { src: portrait2, alt: "Harper's Bazaar Editorial", client: "Harper's Bazaar", name: "Summer Glow", photographer: "Photo by James Chen" },
+  { src: portrait1, alt: "Vogue Beauty Campaign", client: "Vogue Beauty", name: "Midnight Luxe", photographer: "Photo by Sarah Kim" },
+  { src: portrait5, alt: "L'Oréal Paris Commercial", client: "L'Oréal Paris", name: "Radiant Skin", photographer: "Photo by Marc Dubois" },
 ];
 
 const CommercialSection = () => {
@@ -49,10 +49,21 @@ const CommercialSection = () => {
               <img
                 src={image.src}
                 alt={image.alt}
-                className="w-full h-auto object-cover transition-all duration-500 group-hover:scale-105"
+                className="w-full h-auto object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-90"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-all duration-500" />
+              {/* Bottom overlay with gradient */}
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/80 via-foreground/40 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                <p className="text-xs font-semibold uppercase tracking-widest text-background opacity-90">
+                  {image.client}
+                </p>
+                <p className="text-2xl font-bold text-background">
+                  {image.name}
+                </p>
+                <p className="text-xs font-medium text-background opacity-70">
+                  {image.photographer}
+                </p>
+              </div>
             </div>
           </div>
         ))}
