@@ -70,13 +70,13 @@ const Lightbox = ({
         <X size={28} />
       </button>
 
-      {/* Previous button */}
+      {/* Previous button - hidden on mobile */}
       <button
         onClick={(e) => {
           e.stopPropagation();
           onPrevious();
         }}
-        className="absolute left-4 md:left-8 p-2 text-background/80 hover:text-background transition-colors z-10"
+        className="hidden md:block absolute left-8 p-2 text-background/80 hover:text-background transition-colors z-10"
         aria-label="Previous image"
       >
         <ChevronLeft size={40} />
@@ -114,19 +114,15 @@ const Lightbox = ({
           </div>
         )}
 
-        {/* Swipe hint for mobile */}
-        <p className="mt-4 text-xs text-background/50 md:hidden">
-          Swipe to navigate • Swipe down to close
-        </p>
       </div>
 
-      {/* Next button */}
+      {/* Next button - hidden on mobile */}
       <button
         onClick={(e) => {
           e.stopPropagation();
           onNext();
         }}
-        className="absolute right-4 md:right-8 p-2 text-background/80 hover:text-background transition-colors z-10"
+        className="hidden md:block absolute right-8 p-2 text-background/80 hover:text-background transition-colors z-10"
         aria-label="Next image"
       >
         <ChevronRight size={40} />
