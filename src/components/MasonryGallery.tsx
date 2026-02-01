@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Lightbox from "./Lightbox";
+import AnimatedGalleryItem from "./AnimatedGalleryItem";
 
 // Import all gallery images
 import portrait1 from "@/assets/gallery/portrait-1.jpg";
@@ -63,36 +64,12 @@ const MasonryGallery = () => {
     <>
       <div className="max-w-5xl mx-auto columns-1 md:columns-2 lg:columns-3 gap-4 px-4 py-8">
         {galleryImages.map((item, index) => (
-          <div
+          <AnimatedGalleryItem
             key={index}
-            className="mb-4 break-inside-avoid cursor-pointer group relative overflow-hidden rounded-lg shadow-md"
+            item={item}
+            index={index}
             onClick={() => openLightbox(index)}
-          >
-            {/* Image */}
-            <img
-              src={item.src}
-              alt={item.name || item.client || "Portfolio ukázka - Master Your Face"}
-              className="w-full h-auto object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-90"
-              loading="lazy"
-            />
-
-            {/* Hover text overlay */}
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/70 to-transparent p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-              <div className="text-white flex flex-col justify-end gap-2">
-                {item.client && (
-                  <p className="text-xs font-semibold uppercase tracking-widest opacity-90">
-                    {item.client}
-                  </p>
-                )}
-
-                {item.name && <p className="text-2xl font-bold">{item.name}</p>}
-
-                {item.photographer && (
-                  <p className="text-xs font-medium opacity-70">Foto: {item.photographer}</p>
-                )}
-              </div>
-            </div>
-          </div>
+          />
         ))}
       </div>
 
