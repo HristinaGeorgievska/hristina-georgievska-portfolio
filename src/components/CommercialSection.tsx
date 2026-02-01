@@ -53,6 +53,11 @@ const CommercialSection = () => {
       <Lightbox
         isOpen={lightboxOpen}
         imageUrl={commercialImages[currentImageIndex]?.src || ""}
+        imageDetails={{
+          client: commercialImages[currentImageIndex]?.client,
+          name: commercialImages[currentImageIndex]?.name,
+          photographer: commercialImages[currentImageIndex]?.photographer,
+        }}
         onClose={closeLightbox}
         onPrevious={goToPrevious}
         onNext={goToNext}

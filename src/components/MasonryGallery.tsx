@@ -76,6 +76,11 @@ const MasonryGallery = () => {
       <Lightbox
         isOpen={lightboxOpen}
         imageUrl={galleryImages[currentImageIndex]?.src || ""}
+        imageDetails={{
+          client: galleryImages[currentImageIndex]?.client,
+          name: galleryImages[currentImageIndex]?.name,
+          photographer: galleryImages[currentImageIndex]?.photographer,
+        }}
         onClose={closeLightbox}
         onPrevious={goToPrevious}
         onNext={goToNext}
