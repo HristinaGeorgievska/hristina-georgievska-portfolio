@@ -10,9 +10,10 @@ const Navigation = ({ activeSection, onSectionChange }: NavigationProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
-    { id: "photo", label: "Photo" },
+    { id: "fashion", label: "Fashion" },
+    { id: "beauty", label: "Beauty" },
+    { id: "commercial", label: "Commercial" },
     { id: "video", label: "Video" },
-    { id: "commercial", label: "Commercial Work" },
     { id: "contact", label: "Contact" },
   ];
 
