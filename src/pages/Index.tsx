@@ -2,6 +2,7 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import Navigation from "@/components/Navigation";
 import MasonryGallery from "@/components/MasonryGallery";
+import BeautyGallery from "@/components/BeautyGallery";
 import VideoSection from "@/components/VideoSection";
 import CommercialSection from "@/components/CommercialSection";
 import ContactSection from "@/components/ContactSection";
@@ -15,7 +16,7 @@ const Index = () => {
       case "fashion":
         return <MasonryGallery />;
       case "beauty":
-        return <MasonryGallery />;
+        return <BeautyGallery />;
       case "commercial":
         return <CommercialSection />;
       case "video":
