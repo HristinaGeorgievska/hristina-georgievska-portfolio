@@ -23,12 +23,12 @@ const AnimatedGalleryItem = ({ item, index, onClick }: AnimatedGalleryItemProps)
   return (
     <div
       ref={ref}
-      className={`mb-4 break-inside-avoid cursor-pointer group relative overflow-hidden rounded-lg shadow-md transition-all duration-700 ${
+      className={`mb-4 break-inside-avoid cursor-pointer group relative overflow-hidden rounded-xl shadow-md transition-all duration-500 ease-out ${
         isVisible
           ? "opacity-100 translate-y-0"
-          : "opacity-0 translate-y-8"
+          : "opacity-0 translate-y-6"
       }`}
-      style={{ transitionDelay: `${(index % 3) * 100}ms` }}
+      style={{ transitionDelay: `${index * 75}ms` }}
       onClick={onClick}
     >
       {/* Image */}
