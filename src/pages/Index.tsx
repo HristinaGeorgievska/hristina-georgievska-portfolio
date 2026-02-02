@@ -8,16 +8,18 @@ import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 
 const Index = () => {
-  const [activeSection, setActiveSection] = useState("photo");
+  const [activeSection, setActiveSection] = useState("fashion");
 
   const renderSection = () => {
     switch (activeSection) {
-      case "photo":
+      case "fashion":
         return <MasonryGallery />;
-      case "video":
-        return <VideoSection />;
+      case "beauty":
+        return <MasonryGallery />;
       case "commercial":
         return <CommercialSection />;
+      case "video":
+        return <VideoSection />;
       case "contact":
         return <ContactSection />;
       default:
