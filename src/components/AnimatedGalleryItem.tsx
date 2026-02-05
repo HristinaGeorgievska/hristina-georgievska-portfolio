@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface GalleryImage {
   src: string;
@@ -15,6 +17,7 @@ interface AnimatedGalleryItemProps {
 }
 
 const AnimatedGalleryItem = ({ item, index, onClick }: AnimatedGalleryItemProps) => {
+  const [isLoaded, setIsLoaded] = useState(false);
   const { ref, isVisible } = useIntersectionObserver({
     threshold: 0.1,
     rootMargin: "50px",
@@ -31,12 +34,20 @@ const AnimatedGalleryItem = ({ item, index, onClick }: AnimatedGalleryItemProps)
       style={{ transitionDelay: `${index * 75}ms` }}
       onClick={onClick}
     >
+      {/* Skeleton loading state */}
+      {!isLoaded && (
+        <Skeleton className="w-full aspect-[3/4] absolute inset-0 z-10" />
+      )}
+
       {/* Image */}
       <img
         src={item.src}
         alt={item.name || item.client || "Portfolio ukázka - Master Your Face"}
-        className="w-full h-auto object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-90"
+        className={`w-full h-auto object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-90 ${
+          isLoaded ? "opacity-100" : "opacity-0"
+        }`}
         loading="lazy"
+        onLoad={() => setIsLoaded(true)}
       />
 
       {/* Hover text overlay */}

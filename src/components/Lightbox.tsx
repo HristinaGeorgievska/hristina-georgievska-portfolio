@@ -12,6 +12,8 @@ interface LightboxProps {
   isOpen: boolean;
   imageUrl: string;
   imageDetails?: ImageDetails;
+  currentIndex: number;
+  totalImages: number;
   onClose: () => void;
   onPrevious: () => void;
   onNext: () => void;
