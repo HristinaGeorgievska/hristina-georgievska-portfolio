@@ -23,6 +23,8 @@ const Lightbox = ({
   isOpen,
   imageUrl,
   imageDetails,
+  currentIndex,
+  totalImages,
   onClose,
   onPrevious,
   onNext,
