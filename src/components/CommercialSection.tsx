@@ -58,6 +58,8 @@ const CommercialSection = () => {
           name: commercialImages[currentImageIndex]?.name,
           photographer: commercialImages[currentImageIndex]?.photographer,
         }}
+        currentIndex={currentImageIndex}
+        totalImages={commercialImages.length}
         onClose={closeLightbox}
         onPrevious={goToPrevious}
         onNext={goToNext}

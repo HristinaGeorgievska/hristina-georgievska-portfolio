@@ -79,6 +79,8 @@ const MasonryGallery = ({ images = fashionImages }: MasonryGalleryProps) => {
           name: images[currentImageIndex]?.name,
           photographer: images[currentImageIndex]?.photographer,
         }}
+        currentIndex={currentImageIndex}
+        totalImages={images.length}
         onClose={closeLightbox}
         onPrevious={goToPrevious}
         onNext={goToNext}

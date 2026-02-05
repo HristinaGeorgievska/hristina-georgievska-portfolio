@@ -38,6 +38,7 @@ const Index = () => {
       />
       <main>{renderSection()}</main>
       <Footer />
+      <ScrollToTop />
     </div>
   );
 };
