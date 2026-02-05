@@ -7,6 +7,7 @@ import VideoSection from "@/components/VideoSection";
 import CommercialSection from "@/components/CommercialSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState("fashion");
@@ -37,6 +38,7 @@ const Index = () => {
       />
       <main>{renderSection()}</main>
       <Footer />
+      <ScrollToTop />
     </div>
   );
 };

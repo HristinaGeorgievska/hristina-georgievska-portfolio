@@ -12,6 +12,8 @@ interface LightboxProps {
   isOpen: boolean;
   imageUrl: string;
   imageDetails?: ImageDetails;
+  currentIndex: number;
+  totalImages: number;
   onClose: () => void;
   onPrevious: () => void;
   onNext: () => void;
@@ -21,6 +23,8 @@ const Lightbox = ({
   isOpen,
   imageUrl,
   imageDetails,
+  currentIndex,
+  totalImages,
   onClose,
   onPrevious,
   onNext,
@@ -114,6 +118,10 @@ const Lightbox = ({
           </div>
         )}
 
+        {/* Image counter */}
+        <div className="mt-3 text-center text-background/60 text-sm font-medium tracking-wide">
+          {currentIndex + 1} / {totalImages}
+        </div>
       </div>
 
       {/* Next button - hidden on mobile */}
