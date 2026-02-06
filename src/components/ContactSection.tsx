@@ -1,6 +1,25 @@
+import { useMemo } from "react";
 import { Mail, Instagram, Phone } from "lucide-react";
 
+/**
+ * Obfuscates contact details to prevent automated scraping from the JS bundle.
+ * Values are split and joined at runtime so they don't appear as plain strings in the build output.
+ */
+const useContactInfo = () =>
+  useMemo(() => {
+    const emailParts = ["hristina.georgievska1", "gmail.com"];
+    const phoneParts = ["+420", "602", "367", "517"];
+    return {
+      email: emailParts.join("@"),
+      emailDisplay: emailParts.join("@"),
+      phone: phoneParts.join(""),
+      phoneDisplay: phoneParts.join(" "),
+    };
+  }, []);
+
 const ContactSection = () => {
+  const { email, emailDisplay, phone, phoneDisplay } = useContactInfo();
+
   return (
     <section className="py-16 px-4 md:px-8">
       <div className="max-w-2xl mx-auto text-center">
@@ -8,35 +27,35 @@ const ContactSection = () => {
           Get in Touch
         </h2>
         <p className="text-muted-foreground mb-10 leading-relaxed">
-          Available for editorial, commercial, bridal, and special occasion makeup. 
-          Based in Skopje, available for travel worldwide.
+          Professional make-up artist and hair stylist with 20+ years of experience in fashion, editorial, and commercial productions.
+          Based in Prague.
         </p>
         
         <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
           <a
-            href="mailto:hello@hristina.com"
+            href={`mailto:${email}`}
             className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
           >
             <Mail size={20} />
-            <span className="text-sm tracking-wider">hello@hristina.com</span>
+            <span className="text-sm tracking-wider">{emailDisplay}</span>
           </a>
           
           <a
-            href="https://instagram.com"
+            href="https://www.instagram.com/hristinageorgievska/"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
           >
             <Instagram size={20} />
-            <span className="text-sm tracking-wider">@hristina.makeup</span>
+            <span className="text-sm tracking-wider">@hristinageorgievska</span>
           </a>
           
           <a
-            href="tel:+38970123456"
+            href={`tel:${phone}`}
             className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
           >
             <Phone size={20} />
-            <span className="text-sm tracking-wider">+389 70 123 456</span>
+            <span className="text-sm tracking-wider">{phoneDisplay}</span>
           </a>
         </div>
       </div>

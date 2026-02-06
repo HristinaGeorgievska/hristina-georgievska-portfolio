@@ -1,15 +1,9 @@
 import { useState } from "react";
 import Lightbox from "./Lightbox";
 import AnimatedGalleryItem from "./AnimatedGalleryItem";
-
-// Import all gallery images
-import portrait1 from "@/assets/gallery/portrait-1.jpg";
-import portrait2 from "@/assets/gallery/portrait-2.jpg";
-import portrait3 from "@/assets/gallery/portrait-3.jpg";
-import portrait4 from "@/assets/gallery/portrait-4.jpg";
-import portrait5 from "@/assets/gallery/portrait-5.jpg";
-import landscape1 from "@/assets/gallery/landscape-1.jpg";
-import landscape2 from "@/assets/gallery/landscape-2.jpg";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useGalleryImages } from "@/hooks/use-contentful";
+import type { GalleryCategory } from "@/lib/contentful";
 
 export interface GalleryImage {
   src: string;
@@ -19,21 +13,12 @@ export interface GalleryImage {
   photographer?: string;
 }
 
-const fashionImages: GalleryImage[] = [
-  { src: portrait1, alt: "High fashion editorial look", client: "Vogue Italia", name: "Milano Dreams", photographer: "Anna Lee" },
-  { src: landscape1, alt: "Runway inspired styling", client: "Fashion Week", name: "Runway Ready", photographer: "Michael Chen" },
-  { src: portrait2, alt: "Elegant fashion editorial with red dress", client: "Harper's Bazaar", name: "Red Passion", photographer: "Sophie Martin" },
-  { src: portrait4, alt: "Bold editorial statement", client: "Elle Magazine", name: "Bold Statement", photographer: "David Park" },
-  { src: landscape2, alt: "Avant-garde fashion shoot", client: "W Magazine", name: "Avant-Garde", photographer: "Emma Wilson" },
-  { src: portrait3, alt: "Couture fashion styling", client: "L'Officiel", name: "Couture Dreams", photographer: "James Liu" },
-  { src: portrait5, alt: "Evening fashion editorial", client: "Glamour", name: "Evening Luxe", photographer: "Sarah Kim" },
-];
-
 interface MasonryGalleryProps {
-  images?: GalleryImage[];
+  category?: GalleryCategory;
 }
 
-const MasonryGallery = ({ images = fashionImages }: MasonryGalleryProps) => {
+const MasonryGallery = ({ category = "fashion" }: MasonryGalleryProps) => {
+  const { data: images = [], isLoading, isError } = useGalleryImages(category);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -57,6 +42,32 @@ const MasonryGallery = ({ images = fashionImages }: MasonryGalleryProps) => {
       prev === images.length - 1 ? 0 : prev + 1
     );
   };
+
+  // Loading skeleton
+  if (isLoading) {
+    return (
+      <div className="max-w-5xl mx-auto columns-1 md:columns-2 lg:columns-3 gap-4 px-4 py-8">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="mb-4 break-inside-avoid">
+            <Skeleton className="w-full aspect-[3/4] rounded-xl" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // Error or empty state
+  if (isError || images.length === 0) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-16">
+        <p className="text-center text-muted-foreground">
+          {isError
+            ? "Failed to load gallery. Please try again later."
+            : "No images available in this gallery yet."}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>

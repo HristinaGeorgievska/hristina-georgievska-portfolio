@@ -50,22 +50,24 @@ const AnimatedGalleryItem = ({ item, index, onClick }: AnimatedGalleryItemProps)
         onLoad={() => setIsLoaded(true)}
       />
 
-      {/* Hover text overlay */}
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/70 to-transparent p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        <div className="text-white flex flex-col justify-end gap-2">
-          {item.client && (
-            <p className="text-xs font-semibold uppercase tracking-widest opacity-90">
-              {item.client}
-            </p>
-          )}
+      {/* Hover text overlay - only shown if there's content */}
+      {(item.client || item.name || item.photographer) && (
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/70 to-transparent p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          <div className="text-white flex flex-col justify-end gap-1">
+            {item.client && (
+              <p className="text-xs font-semibold uppercase tracking-widest opacity-90">
+                {item.client}
+              </p>
+            )}
 
-          {item.name && <p className="text-2xl font-bold">{item.name}</p>}
+            {item.name && <p className="text-2xl font-bold">{item.name}</p>}
 
-          {item.photographer && (
-            <p className="text-xs font-medium opacity-70">Foto: {item.photographer}</p>
-          )}
+            {item.photographer && (
+              <p className="text-xs font-medium opacity-70">Foto: {item.photographer}</p>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
