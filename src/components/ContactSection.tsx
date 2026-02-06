@@ -27,7 +27,7 @@ const ContactSection = () => {
           Get in Touch
         </h2>
         <p className="text-muted-foreground mb-10 leading-relaxed">
-          Professional make-up artist and hair stylist with 20+ years of experience in fashion, editorial, and commercial productions.
+          Professional make-up artist and hair stylist with 28+ years of experience in fashion, editorial, and commercial productions.
           Based in Prague.
         </p>
         
@@ -55,7 +55,7 @@ const ContactSection = () => {
             className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
           >
             <Phone size={20} />
-            <span className="text-sm tracking-wider">{phoneDisplay}</span>
+            <span className="text-sm tracking-wider whitespace-nowrap">{phoneDisplay}</span>
           </a>
         </div>
       </div>
