@@ -1,51 +1,59 @@
-import { createClient, Entry, Asset, EntrySkeletonType } from "contentful";
+import { createClient, type EntryFieldTypes } from "contentful";
 
 // Types for Contentful content models
-export type GalleryCategory = "fashion" | "beauty" | "commercial";
+export type GalleryCategory = "fashion" | "beauty" | "advertising";
 
-interface GalleryImageFields {
+// --- Photo Collection ---
+
+interface PhotoCollectionSkeleton {
+  contentTypeId: "photoCollection";
+  fields: {
+    title: EntryFieldTypes.Text;
+    slug: EntryFieldTypes.Text;
+    coverImage: EntryFieldTypes.AssetLink;
+    photos: EntryFieldTypes.Array<EntryFieldTypes.AssetLink>;
+    category: EntryFieldTypes.Text;
+    client: EntryFieldTypes.Text;
+    photographer: EntryFieldTypes.Text;
+    description: EntryFieldTypes.Text;
+    order: EntryFieldTypes.Integer;
+  };
+}
+
+/** Frontend-facing type for a photo collection */
+export interface PhotoCollection {
+  id: string;
   title: string;
-  image: Asset;
-  alt: string;
-  client?: string;
-  name?: string;
-  photographer?: string;
+  slug: string;
+  coverUrl: string;
+  photos: string[];
   category: GalleryCategory;
-  order?: number;
-}
-
-interface VideoFields {
-  title: string;
-  embedUrl: string;
-  thumbnail?: Asset;
-  description?: string;
-  order?: number;
-}
-
-// Entry skeleton types for Contentful SDK
-interface GalleryImageSkeleton extends EntrySkeletonType {
-  contentTypeId: "galleryImage";
-  fields: GalleryImageFields;
-}
-
-interface VideoSkeleton extends EntrySkeletonType {
-  contentTypeId: "video";
-  fields: VideoFields;
-}
-
-// Frontend-facing types (matching existing GalleryImage interface)
-export interface GalleryImage {
-  src: string;
-  alt: string;
   client?: string;
-  name?: string;
   photographer?: string;
+  description?: string;
+}
+
+// --- Video ---
+
+interface VideoSkeleton {
+  contentTypeId: "video";
+  fields: {
+    title: EntryFieldTypes.Text;
+    embedUrl: EntryFieldTypes.Text;
+    videoFile: EntryFieldTypes.AssetLink;
+    thumbnail: EntryFieldTypes.AssetLink;
+    description: EntryFieldTypes.Text;
+    order: EntryFieldTypes.Integer;
+  };
 }
 
 export interface Video {
   id: string;
   title: string;
-  embedUrl: string;
+  /** Parsed embed URL for YouTube/Vimeo iframes */
+  embedUrl?: string;
+  /** Direct video file URL from Contentful asset upload */
+  videoFileUrl?: string;
   thumbnailUrl?: string;
   description?: string;
 }
@@ -60,7 +68,6 @@ const client = createClient({
  * Parse YouTube/Vimeo URL into embeddable iframe URL
  */
 export function parseEmbedUrl(url: string): string {
-  // YouTube patterns
   const youtubeMatch = url.match(
     /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
   );
@@ -68,7 +75,6 @@ export function parseEmbedUrl(url: string): string {
     return `https://www.youtube-nocookie.com/embed/${youtubeMatch[1]}`;
   }
 
-  // Vimeo patterns
   const vimeoMatch = url.match(
     /(?:vimeo\.com\/(?:video\/)?|player\.vimeo\.com\/video\/)(\d+)/
   );
@@ -76,48 +82,104 @@ export function parseEmbedUrl(url: string): string {
     return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
   }
 
-  // Return as-is if already an embed URL or unknown format
   return url;
 }
 
 /**
- * Extract asset URL from Contentful Asset
+ * Extract asset URL from a resolved Contentful asset
  */
-function getAssetUrl(asset: Asset | undefined): string | undefined {
-  if (!asset?.fields?.file?.url) return undefined;
-  const url = asset.fields.file.url as string;
+function getAssetUrl(asset: unknown): string | undefined {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const a = asset as any;
+  if (!a?.fields?.file?.url) return undefined;
+  const url = a.fields.file.url as string;
   return url.startsWith("//") ? `https:${url}` : url;
 }
 
 /**
- * Fetch gallery images by category
+ * Extract multiple asset URLs from resolved Contentful assets array
  */
-export async function getGalleryImages(
+function getAssetUrls(assets: unknown): string[] {
+  if (!assets || !Array.isArray(assets)) return [];
+  return assets
+    .map((asset) => getAssetUrl(asset))
+    .filter((url): url is string => !!url);
+}
+
+/**
+ * Fetch photo collections by category
+ */
+export async function getCollections(
   category: GalleryCategory
-): Promise<GalleryImage[]> {
-  const response = await client.getEntries<GalleryImageSkeleton>({
-    content_type: "galleryImage",
+): Promise<PhotoCollection[]> {
+  const response = await client.getEntries<PhotoCollectionSkeleton>({
+    content_type: "photoCollection",
     "fields.category": category,
-    order: ["fields.order"],
-    include: 2, // Include linked assets
+    order: ["fields.order" as const],
+    include: 2,
   });
 
   return response.items
-    .map((entry: Entry<GalleryImageSkeleton>) => {
+    .map((entry) => {
       const fields = entry.fields;
-      const imageUrl = getAssetUrl(fields.image as Asset);
+      const coverUrl = getAssetUrl(fields.coverImage);
 
-      if (!imageUrl) return null;
+      if (!coverUrl) return null;
 
-      return {
-        src: imageUrl,
-        alt: (fields.alt as string) || (fields.title as string) || "",
-        client: fields.client as string | undefined,
-        name: fields.name as string | undefined,
-        photographer: fields.photographer as string | undefined,
+      const result: PhotoCollection = {
+        id: entry.sys.id,
+        title: String(fields.title ?? ""),
+        slug: String(fields.slug ?? ""),
+        coverUrl,
+        photos: getAssetUrls(fields.photos),
+        category: String(fields.category ?? "fashion") as GalleryCategory,
+        client: fields.client ? String(fields.client) : undefined,
+        photographer: fields.photographer
+          ? String(fields.photographer)
+          : undefined,
+        description: fields.description
+          ? String(fields.description)
+          : undefined,
       };
+      return result;
     })
-    .filter((item): item is GalleryImage => item !== null);
+    .filter((item): item is PhotoCollection => item !== null);
+}
+
+/**
+ * Fetch a single photo collection by slug
+ */
+export async function getCollectionBySlug(
+  slug: string
+): Promise<PhotoCollection | null> {
+  const response = await client.getEntries<PhotoCollectionSkeleton>({
+    content_type: "photoCollection",
+    "fields.slug": slug,
+    limit: 1,
+    include: 2,
+  });
+
+  if (response.items.length === 0) return null;
+
+  const entry = response.items[0];
+  const fields = entry.fields;
+  const coverUrl = getAssetUrl(fields.coverImage);
+
+  if (!coverUrl) return null;
+
+  return {
+    id: entry.sys.id,
+    title: String(fields.title ?? ""),
+    slug: String(fields.slug ?? ""),
+    coverUrl,
+    photos: getAssetUrls(fields.photos),
+    category: String(fields.category ?? "fashion") as GalleryCategory,
+    client: fields.client ? String(fields.client) : undefined,
+    photographer: fields.photographer
+      ? String(fields.photographer)
+      : undefined,
+    description: fields.description ? String(fields.description) : undefined,
+  };
 }
 
 /**
@@ -126,18 +188,24 @@ export async function getGalleryImages(
 export async function getVideos(): Promise<Video[]> {
   const response = await client.getEntries<VideoSkeleton>({
     content_type: "video",
-    order: ["fields.order"],
+    order: ["fields.order" as const],
     include: 2,
   });
 
-  return response.items.map((entry: Entry<VideoSkeleton>) => {
+  return response.items.map((entry) => {
     const fields = entry.fields;
+    const rawEmbed = fields.embedUrl ? String(fields.embedUrl) : "";
+    const videoFileUrl = getAssetUrl(fields.videoFile);
+
     return {
       id: entry.sys.id,
-      title: fields.title as string,
-      embedUrl: parseEmbedUrl(fields.embedUrl as string),
-      thumbnailUrl: getAssetUrl(fields.thumbnail as Asset | undefined),
-      description: fields.description as string | undefined,
+      title: String(fields.title ?? ""),
+      embedUrl: rawEmbed ? parseEmbedUrl(rawEmbed) : undefined,
+      videoFileUrl,
+      thumbnailUrl: getAssetUrl(fields.thumbnail),
+      description: fields.description
+        ? String(fields.description)
+        : undefined,
     };
   });
 }
