@@ -8,15 +8,18 @@ import Lightbox from "@/components/Lightbox";
 import Header from "@/components/Header";
 import ScrollToTop from "@/components/ScrollToTop";
 import Footer from "@/components/Footer";
+import { Helmet } from "react-helmet-async";
 
 /** Animated photo item within the collection detail grid */
 const PhotoItem = ({
   src,
   index,
+  altText,
   onClick,
 }: {
   src: string;
   index: number;
+  altText: string;
   onClick: () => void;
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -39,7 +42,7 @@ const PhotoItem = ({
       )}
       <img
         src={src}
-        alt={`Photo ${index + 1}`}
+        alt={altText}
         className={`w-full h-auto object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-90 ${
           isLoaded ? "opacity-100" : "opacity-0"
         }`}
@@ -124,6 +127,14 @@ const CollectionDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>{collection.title} | Makeup & Hair by Hristina Georgievska</title>
+        <meta
+          name="description"
+          content={collection.description || `View the ${collection.title} gallery. Makeup and hair styling by Prague-based artist Hristina Georgievska.`}
+        />
+        <link rel="canonical" href={`https://hristinageorgievska.com/collection/${slug}`} />
+      </Helmet>
       <Header />
 
       {/* Breadcrumb / back navigation */}
@@ -164,14 +175,18 @@ const CollectionDetail = () => {
 
       {/* Photos grid */}
       <div className="max-w-5xl mx-auto columns-1 md:columns-2 lg:columns-3 gap-4 px-4 pb-16">
-        {collection.photos.map((photoUrl, index) => (
-          <PhotoItem
-            key={index}
-            src={photoUrl}
-            index={index}
-            onClick={() => openLightbox(index)}
-          />
-        ))}
+        {collection.photos.map((photoUrl, index) => {
+          const altText = `${collection.title || "Portfolio"} - ${collection.client || "Gallery"} Makeup and Hair by Hristina Georgievska - Photo ${index + 1}`;
+          return (
+            <PhotoItem
+              key={index}
+              src={photoUrl}
+              index={index}
+              altText={altText}
+              onClick={() => openLightbox(index)}
+            />
+          );
+        })}
       </div>
 
       <Footer />

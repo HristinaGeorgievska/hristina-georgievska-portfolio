@@ -88,21 +88,29 @@ export function parseEmbedUrl(url: string): string {
 /**
  * Extract asset URL from a resolved Contentful asset
  */
-function getAssetUrl(asset: unknown): string | undefined {
+function getAssetUrl(asset: unknown, width: number = 1920): string | undefined {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const a = asset as any;
   if (!a?.fields?.file?.url) return undefined;
   const url = a.fields.file.url as string;
-  return url.startsWith("//") ? `https:${url}` : url;
+  let finalUrl = url.startsWith("//") ? `https:${url}` : url;
+
+  const contentType = a.fields.file.contentType;
+  const isImage = contentType?.startsWith("image/") && contentType !== "image/svg+xml";
+  if (isImage || finalUrl.match(/\.(jpg|jpeg|png|webp|avif)$/i)) {
+    finalUrl += `?fm=webp&q=80&w=${width}`;
+  }
+
+  return finalUrl;
 }
 
 /**
  * Extract multiple asset URLs from resolved Contentful assets array
  */
-function getAssetUrls(assets: unknown): string[] {
+function getAssetUrls(assets: unknown, width: number = 1920): string[] {
   if (!assets || !Array.isArray(assets)) return [];
   return assets
-    .map((asset) => getAssetUrl(asset))
+    .map((asset) => getAssetUrl(asset, width))
     .filter((url): url is string => !!url);
 }
 

@@ -7,45 +7,66 @@ interface MasonryGalleryProps {
   category?: GalleryCategory;
 }
 
+const categoryLabel: Record<string, string> = {
+  fashion: "Fashion",
+  beauty: "Beauty",
+  advertising: "Advertising",
+};
+
+const MobileSectionHeading = ({ category }: { category: string }) => (
+  <h2 className="md:hidden font-serif text-2xl tracking-widest text-foreground text-center pt-6 pb-2">
+    {categoryLabel[category] ?? category}
+  </h2>
+);
+
 const MasonryGallery = ({ category = "fashion" }: MasonryGalleryProps) => {
   const { data: collections = [], isLoading, isError } = useCollections(category);
 
   // Loading skeleton
   if (isLoading) {
     return (
-      <div className="max-w-5xl mx-auto columns-1 md:columns-2 lg:columns-3 gap-4 px-4 py-8">
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="mb-4 break-inside-avoid">
-            <Skeleton className="w-full aspect-[3/4] rounded-xl" />
-          </div>
-        ))}
-      </div>
+      <section>
+        <MobileSectionHeading category={category} />
+        <div className="max-w-5xl mx-auto columns-1 md:columns-2 lg:columns-3 gap-4 px-4 py-8">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="mb-4 break-inside-avoid">
+              <Skeleton className="w-full aspect-[3/4] rounded-xl" />
+            </div>
+          ))}
+        </div>
+      </section>
     );
   }
 
   // Error or empty state
   if (isError || collections.length === 0) {
     return (
-      <div className="max-w-5xl mx-auto px-4 py-16">
-        <p className="text-center text-muted-foreground">
-          {isError
-            ? "Failed to load gallery. Please try again later."
-            : "No collections available in this gallery yet."}
-        </p>
-      </div>
+      <section>
+        <MobileSectionHeading category={category} />
+        <div className="max-w-5xl mx-auto px-4 py-16">
+          <p className="text-center text-muted-foreground">
+            {isError
+              ? "Failed to load gallery. Please try again later."
+              : "No collections available in this gallery yet."}
+          </p>
+        </div>
+      </section>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto columns-1 md:columns-2 lg:columns-3 gap-4 px-4 py-8">
-      {collections.map((collection, index) => (
-        <AnimatedGalleryItem
-          key={collection.id}
-          item={collection}
-          index={index}
-        />
-      ))}
-    </div>
+    <section>
+      <MobileSectionHeading category={category} />
+      <div className="max-w-5xl mx-auto columns-1 md:columns-2 lg:columns-3 gap-4 px-4 py-8">
+        {collections.map((collection, index) => (
+          <AnimatedGalleryItem
+            key={collection.id}
+            item={collection}
+            index={index}
+          />
+        ))}
+      </div>
+    </section>
   );
 };
 

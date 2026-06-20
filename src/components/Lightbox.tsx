@@ -93,7 +93,7 @@ const Lightbox = ({
       >
         <img
           src={imageUrl}
-          alt={imageDetails?.name || "Gallery image"}
+          alt={hasDetails ? `${imageDetails?.name || "Portfolio"} - ${imageDetails?.client || "Gallery"} Makeup and Hair by Hristina Georgievska` : "Makeup and Hair Portfolio Image"}
           className="max-w-full max-h-[75vh] md:max-h-[80vh] object-contain rounded-lg shadow-2xl"
         />
 

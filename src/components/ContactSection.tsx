@@ -21,7 +21,7 @@ const ContactSection = () => {
   const { email, emailDisplay, phone, phoneDisplay } = useContactInfo();
 
   return (
-    <section className="py-16 px-4 md:px-8">
+    <section className="pt-8 pb-16 px-4 md:py-16 md:px-8">
       <div className="max-w-2xl mx-auto text-center">
         <h2 className="font-serif text-2xl md:text-3xl tracking-wider text-foreground mb-8">
           Get in Touch

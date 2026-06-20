@@ -35,7 +35,7 @@ const AnimatedGalleryItem = ({ item, index }: AnimatedGalleryItemProps) => {
         {/* Cover Image */}
         <img
           src={item.coverUrl}
-          alt={item.title || item.client || "Portfolio"}
+          alt={`${item.title || "Portfolio"} - ${item.client || "Gallery"} Makeup and Hair by Hristina Georgievska`}
           className={`w-full h-auto object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-90 ${
             isLoaded ? "opacity-100" : "opacity-0"
           }`}
