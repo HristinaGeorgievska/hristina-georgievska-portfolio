@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
 import { useVideos } from "@/hooks/use-contentful";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
@@ -137,7 +136,7 @@ const VideoModal = ({
           <h3 className="text-xl md:text-2xl font-bold mb-1">{video.title}</h3>
           {video.description && (
             <div className="text-sm opacity-60 prose prose-sm max-w-xl mx-auto [&_p]:text-background/60">
-              <ReactMarkdown rehypePlugins={[rehypeRaw]}>{video.description}</ReactMarkdown>
+              <ReactMarkdown skipHtml>{video.description}</ReactMarkdown>
             </div>
           )}
         </div>

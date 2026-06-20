@@ -67,7 +67,7 @@ const client = createClient({
 /**
  * Parse YouTube/Vimeo URL into embeddable iframe URL
  */
-export function parseEmbedUrl(url: string): string {
+export function parseEmbedUrl(url: string): string | undefined {
   const youtubeMatch = url.match(
     /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
   );
@@ -82,7 +82,7 @@ export function parseEmbedUrl(url: string): string {
     return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
   }
 
-  return url;
+  return undefined;
 }
 
 /**
