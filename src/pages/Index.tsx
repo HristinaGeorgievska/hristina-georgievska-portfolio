@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import Header from "@/components/Header";
 import Navigation from "@/components/Navigation";
 import MasonryGallery from "@/components/MasonryGallery";
@@ -9,8 +9,15 @@ import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 
+const VALID_SECTIONS = ["fashion", "beauty", "advertising", "video", "contact"] as const;
+type SectionType = (typeof VALID_SECTIONS)[number];
+
 const Index = () => {
-  const [activeSection, setActiveSection] = useState("fashion");
+  const location = useLocation();
+  const segment = location.pathname.replace(/^\//, "").toLowerCase();
+  const activeSection: SectionType = (VALID_SECTIONS as readonly string[]).includes(segment)
+    ? (segment as SectionType)
+    : "fashion";
 
   const renderSection = () => {
     switch (activeSection) {
@@ -32,10 +39,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <Navigation
-        activeSection={activeSection}
-        onSectionChange={setActiveSection}
-      />
+      <Navigation activeSection={activeSection} />
       <main>{renderSection()}</main>
       <Footer />
       <ScrollToTop />

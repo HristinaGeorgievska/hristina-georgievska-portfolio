@@ -8,9 +8,9 @@ import {
   Video,
 } from "@/lib/contentful";
 
-// Collections update roughly monthly — keep fresh data for 1 hour,
+// Collections update periodically — keep fresh data for 15 minutes,
 // and hold the in-memory cache for 24 hours across route navigations.
-const STALE_TIME = 60 * 60 * 1000; // 1 hour
+const STALE_TIME = 15 * 60 * 1000; // 15 minutes
 const GC_TIME = 24 * 60 * 60 * 1000; // 24 hours
 
 /**

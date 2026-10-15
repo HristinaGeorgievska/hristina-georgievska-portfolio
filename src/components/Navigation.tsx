@@ -1,26 +1,20 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface NavigationProps {
   activeSection: string;
-  onSectionChange: (section: string) => void;
 }
 
-const Navigation = ({ activeSection, onSectionChange }: NavigationProps) => {
+const Navigation = ({ activeSection }: NavigationProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
-    { id: "fashion", label: "Fashion" },
-    { id: "beauty", label: "Beauty" },
-    { id: "advertising", label: "Advertising" },
-    { id: "video", label: "Video" },
-    { id: "contact", label: "Contact" },
+    { id: "fashion", label: "Fashion", path: "/" },
+    { id: "beauty", label: "Beauty", path: "/beauty" },
+    { id: "advertising", label: "Advertising", path: "/advertising" },
+    { id: "video", label: "Video", path: "/video" },
+    { id: "contact", label: "Contact", path: "/contact" },
   ];
-
-  const handleNavClick = (id: string) => {
-    onSectionChange(id);
-    setIsOpen(false);
-  };
 
   return (
     <>
@@ -29,8 +23,8 @@ const Navigation = ({ activeSection, onSectionChange }: NavigationProps) => {
         <ul className="hidden md:flex gap-10">
           {navItems.map((item) => (
             <li key={item.id}>
-              <button
-                onClick={() => onSectionChange(item.id)}
+              <Link
+                to={item.path}
                 className={`text-sm tracking-wider transition-all duration-300 hover:text-foreground ${
                   activeSection === item.id
                     ? "text-foreground font-medium"
@@ -38,7 +32,7 @@ const Navigation = ({ activeSection, onSectionChange }: NavigationProps) => {
                 }`}
               >
                 {item.label}
-              </button>
+              </Link>
             </li>
           ))}
         </ul>
@@ -86,9 +80,10 @@ const Navigation = ({ activeSection, onSectionChange }: NavigationProps) => {
         {/* Centered Menu Content */}
         <div className="relative z-10 flex flex-col items-center justify-center h-full gap-8">
           {navItems.map((item, index) => (
-            <button
+            <Link
               key={item.id}
-              onClick={() => handleNavClick(item.id)}
+              to={item.path}
+              onClick={() => setIsOpen(false)}
               className={`text-2xl tracking-widest transition-all duration-300 hover:text-foreground ${
                 activeSection === item.id
                   ? "text-foreground font-medium"
@@ -101,7 +96,7 @@ const Navigation = ({ activeSection, onSectionChange }: NavigationProps) => {
               }}
             >
               {item.label}
-            </button>
+            </Link>
           ))}
         </div>
       </div>

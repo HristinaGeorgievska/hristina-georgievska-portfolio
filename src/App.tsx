@@ -52,6 +52,11 @@ const App = () => (
             <Suspense fallback={<FallbackLoader />}>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/fashion" element={<Index />} />
+                <Route path="/beauty" element={<Index />} />
+                <Route path="/advertising" element={<Index />} />
+                <Route path="/video" element={<Index />} />
+                <Route path="/contact" element={<Index />} />
                 <Route path="/collection/:slug" element={<CollectionDetail />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
