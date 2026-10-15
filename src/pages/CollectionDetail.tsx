@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useCollection } from "@/hooks/use-contentful";
+import { buildSrcSet } from "@/lib/contentful";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import Lightbox from "@/components/Lightbox";
@@ -9,6 +10,8 @@ import Header from "@/components/Header";
 import ScrollToTop from "@/components/ScrollToTop";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
+
+const PAGE_SIZE = 20;
 
 /** Animated photo item within the collection detail grid */
 const PhotoItem = ({
@@ -34,7 +37,8 @@ const PhotoItem = ({
       className={`mb-4 break-inside-avoid cursor-pointer group relative overflow-hidden rounded-xl shadow-md transition-all duration-500 ease-out ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
       }`}
-      style={{ transitionDelay: `${index * 75}ms` }}
+      // Stagger per-batch so each new batch animates within 1.5 s
+      style={{ transitionDelay: `${(index % PAGE_SIZE) * 75}ms` }}
       onClick={onClick}
     >
       {!isLoaded && (
@@ -42,6 +46,8 @@ const PhotoItem = ({
       )}
       <img
         src={src}
+        srcSet={buildSrcSet(src)}
+        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
         alt={altText}
         className={`w-full h-auto object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-90 ${
           isLoaded ? "opacity-100" : "opacity-0"
@@ -53,6 +59,27 @@ const PhotoItem = ({
   );
 };
 
+/** Invisible sentinel that triggers loading the next batch when scrolled into view */
+const LoadMoreSentinel = ({ onVisible }: { onVisible: () => void }) => {
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) onVisible();
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [onVisible]);
+
+  return <div ref={sentinelRef} className="h-1 w-full" aria-hidden="true" />;
+};
+
 const CollectionDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
@@ -60,6 +87,17 @@ const CollectionDetail = () => {
 
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Infinite scroll: number of photos currently rendered
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+  const photos = collection?.photos ?? [];
+  const visiblePhotos = photos.slice(0, visibleCount);
+  const hasMore = visibleCount < photos.length;
+
+  const loadMore = useCallback(() => {
+    setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, photos.length));
+  }, [photos.length]);
 
   const openLightbox = (index: number) => {
     setCurrentImageIndex(index);
@@ -71,14 +109,14 @@ const CollectionDetail = () => {
   const goToPrevious = () => {
     if (!collection) return;
     setCurrentImageIndex((prev) =>
-      prev === 0 ? collection.photos.length - 1 : prev - 1
+      prev === 0 ? photos.length - 1 : prev - 1
     );
   };
 
   const goToNext = () => {
     if (!collection) return;
     setCurrentImageIndex((prev) =>
-      prev === collection.photos.length - 1 ? 0 : prev + 1
+      prev === photos.length - 1 ? 0 : prev + 1
     );
   };
 
@@ -128,7 +166,7 @@ const CollectionDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>{collection.title} | Makeup & Hair by Hristina Georgievska</title>
+        <title>{collection.title} | Makeup &amp; Hair by Hristina Georgievska</title>
         <meta
           name="description"
           content={collection.description || `View the ${collection.title} gallery. Makeup and hair styling by Prague-based artist Hristina Georgievska.`}
@@ -173,13 +211,13 @@ const CollectionDetail = () => {
         )}
       </div>
 
-      {/* Photos grid */}
+      {/* Photos grid — renders in batches via infinite scroll */}
       <div className="max-w-5xl mx-auto columns-1 md:columns-2 lg:columns-3 gap-4 px-4 pb-16">
-        {collection.photos.map((photoUrl, index) => {
+        {visiblePhotos.map((photoUrl, index) => {
           const altText = `${collection.title || "Portfolio"} - ${collection.client || "Gallery"} Makeup and Hair by Hristina Georgievska - Photo ${index + 1}`;
           return (
             <PhotoItem
-              key={index}
+              key={photoUrl + index}
               src={photoUrl}
               index={index}
               altText={altText}
@@ -189,20 +227,23 @@ const CollectionDetail = () => {
         })}
       </div>
 
+      {/* Auto-load sentinel — fires when user scrolls near the bottom */}
+      {hasMore && <LoadMoreSentinel onVisible={loadMore} />}
+
       <Footer />
       <ScrollToTop />
 
       {/* Lightbox for viewing individual photos */}
       <Lightbox
         isOpen={lightboxOpen}
-        imageUrl={collection.photos[currentImageIndex] || ""}
+        imageUrl={photos[currentImageIndex] || ""}
         imageDetails={{
           client: collection.client,
           name: collection.title,
           photographer: collection.photographer,
         }}
         currentIndex={currentImageIndex}
-        totalImages={collection.photos.length}
+        totalImages={photos.length}
         onClose={closeLightbox}
         onPrevious={goToPrevious}
         onNext={goToNext}

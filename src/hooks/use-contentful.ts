@@ -8,7 +8,10 @@ import {
   Video,
 } from "@/lib/contentful";
 
-const STALE_TIME = 5 * 60 * 1000; // 5 minutes cache
+// Collections update roughly monthly — keep fresh data for 1 hour,
+// and hold the in-memory cache for 24 hours across route navigations.
+const STALE_TIME = 60 * 60 * 1000; // 1 hour
+const GC_TIME = 24 * 60 * 60 * 1000; // 24 hours
 
 /**
  * Fetch photo collections by category from Contentful
@@ -18,6 +21,7 @@ export function useCollections(category: GalleryCategory) {
     queryKey: ["collections", category],
     queryFn: () => getCollections(category),
     staleTime: STALE_TIME,
+    gcTime: GC_TIME,
     retry: 2,
   });
 }
@@ -30,6 +34,7 @@ export function useCollection(slug: string) {
     queryKey: ["collection", slug],
     queryFn: () => getCollectionBySlug(slug),
     staleTime: STALE_TIME,
+    gcTime: GC_TIME,
     retry: 2,
     enabled: !!slug,
   });
@@ -43,6 +48,7 @@ export function useVideos() {
     queryKey: ["videos"],
     queryFn: getVideos,
     staleTime: STALE_TIME,
+    gcTime: GC_TIME,
     retry: 2,
   });
 }

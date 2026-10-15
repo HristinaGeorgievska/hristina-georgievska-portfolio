@@ -2,7 +2,9 @@ import React, { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
@@ -10,7 +12,23 @@ const Index = React.lazy(() => import("./pages/Index"));
 const CollectionDetail = React.lazy(() => import("./pages/CollectionDetail"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // 24-hour in-memory lifetime; the localStorage persister extends this
+      // across page refreshes so revisits are instant.
+      gcTime: 24 * 60 * 60 * 1000,
+    },
+  },
+});
+
+// Persist the full React Query cache to localStorage.
+// Versioned key means old serialized caches are automatically discarded
+// when we deploy breaking data-shape changes.
+const localStoragePersister = createSyncStoragePersister({
+  storage: window.localStorage,
+  key: "hristina-portfolio-rq-cache-v1",
+});
 
 const FallbackLoader = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -23,7 +41,10 @@ import { HelmetProvider } from "react-helmet-async";
 const App = () => (
   <ErrorBoundary>
     <HelmetProvider>
-      <QueryClientProvider client={queryClient}>
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{ persister: localStoragePersister }}
+      >
         <TooltipProvider>
           <Toaster />
           <Sonner />
@@ -38,7 +59,7 @@ const App = () => (
             </Suspense>
           </BrowserRouter>
         </TooltipProvider>
-      </QueryClientProvider>
+      </PersistQueryClientProvider>
     </HelmetProvider>
   </ErrorBoundary>
 );

@@ -26,11 +26,29 @@ export interface PhotoCollection {
   title: string;
   slug: string;
   coverUrl: string;
-  photos: string[];
+  /** Only populated when fetching a single collection (detail page). */
+  photos?: string[];
   category: GalleryCategory;
   client?: string;
   photographer?: string;
   description?: string;
+}
+
+/**
+ * Generate a srcset string for a Contentful image URL.
+ * Strips any existing `w=` parameter and emits 400w, 800w, 1200w, 1920w variants.
+ */
+export function buildSrcSet(url?: string): string | undefined {
+  if (!url || typeof url !== "string" || !url.includes("ctfassets.net")) {
+    return undefined;
+  }
+  const base = url.replace(/([?&])w=\d+(&|$)/, (_m, pre, post) =>
+    post ? pre : ""
+  );
+  const sep = base.includes("?") ? "&" : "?";
+  return [400, 800, 1200, 1920]
+    .map((w) => `${base}${sep}w=${w} ${w}w`)
+    .join(", ");
 }
 
 // --- Video ---
@@ -88,7 +106,7 @@ export function parseEmbedUrl(url: string): string | undefined {
 /**
  * Extract asset URL from a resolved Contentful asset
  */
-function getAssetUrl(asset: unknown, width: number = 1920): string | undefined {
+function getAssetUrl(asset: unknown, width: number = 800): string | undefined {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const a = asset as any;
   if (!a?.fields?.file?.url) return undefined;
@@ -117,6 +135,24 @@ function getAssetUrls(assets: unknown, width: number = 1920): string[] {
 /**
  * Fetch photo collections by category
  */
+/**
+ * Fields we actually need for the gallery overview.
+ * `fields.photos` is intentionally excluded to avoid fetching ~500 asset
+ * URLs on every category page load — photos are only fetched in
+ * `getCollectionBySlug` when the user opens a specific collection.
+ */
+const COLLECTION_LIST_SELECT = [
+  "sys.id",
+  "fields.title",
+  "fields.slug",
+  "fields.coverImage",
+  "fields.category",
+  "fields.client",
+  "fields.photographer",
+  "fields.description",
+  "fields.order",
+] as const;
+
 export async function getCollections(
   category: GalleryCategory
 ): Promise<PhotoCollection[]> {
@@ -124,7 +160,13 @@ export async function getCollections(
     content_type: "photoCollection",
     "fields.category": category,
     order: ["fields.order" as const],
-    include: 2,
+    // include:1 resolves only the coverImage asset link (one level deep).
+    // We don't need include:2 since photos are excluded via select.
+    include: 1,
+    // Guard against the 100-entry default — up to 200 collections per category.
+    limit: 200,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    select: COLLECTION_LIST_SELECT as any,
   });
 
   return response.items
@@ -139,7 +181,7 @@ export async function getCollections(
         title: String(fields.title ?? ""),
         slug: String(fields.slug ?? ""),
         coverUrl,
-        photos: getAssetUrls(fields.photos),
+        // photos intentionally omitted — fetched only on the detail page
         category: String(fields.category ?? "fashion") as GalleryCategory,
         client: fields.client ? String(fields.client) : undefined,
         photographer: fields.photographer

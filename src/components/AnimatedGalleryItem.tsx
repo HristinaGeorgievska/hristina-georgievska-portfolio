@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { PhotoCollection } from "@/lib/contentful";
+import { buildSrcSet } from "@/lib/contentful";
 
 interface AnimatedGalleryItemProps {
   item: PhotoCollection;
@@ -24,7 +25,8 @@ const AnimatedGalleryItem = ({ item, index }: AnimatedGalleryItemProps) => {
           ? "opacity-100 translate-y-0"
           : "opacity-0 translate-y-6"
       }`}
-      style={{ transitionDelay: `${index * 75}ms` }}
+      // Cap the stagger so the last card never waits more than ~600 ms
+      style={{ transitionDelay: `${Math.min(index, 8) * 75}ms` }}
     >
       <Link to={`/collection/${item.slug}`} className="block">
         {/* Skeleton loading state */}
@@ -35,6 +37,8 @@ const AnimatedGalleryItem = ({ item, index }: AnimatedGalleryItemProps) => {
         {/* Cover Image */}
         <img
           src={item.coverUrl}
+          srcSet={buildSrcSet(item.coverUrl)}
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           alt={`${item.title || "Portfolio"} - ${item.client || "Gallery"} Makeup and Hair by Hristina Georgievska`}
           className={`w-full h-auto object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-90 ${
             isLoaded ? "opacity-100" : "opacity-0"

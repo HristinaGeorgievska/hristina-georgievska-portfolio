@@ -1,6 +1,6 @@
 # Hristina Georgievska – Portfolio
 
-Modern, responsive artist & design portfolio website built with Vite, React, TypeScript, and Tailwind CSS, integrated with Contentful CMS and Sentry.
+Modern, responsive artist & design portfolio website built with Vite, React, TypeScript, and Tailwind CSS, integrated with Contentful CMS.
 
 ## 🚀 Features
 
@@ -8,7 +8,6 @@ Modern, responsive artist & design portfolio website built with Vite, React, Typ
 - **Contentful CMS Integration**: Dynamic content management for collections, artworks, and biographies.
 - **Responsive & Modern UI**: Built with Tailwind CSS and Radix UI / shadcn-ui components.
 - **SEO & Performance**: Optimized images, metadata via `react-helmet-async`, and client-side caching with TanStack Query.
-- **Monitoring**: Error tracking and performance monitoring with Sentry.
 
 ## 🛠️ Tech Stack
 
@@ -18,7 +17,6 @@ Modern, responsive artist & design portfolio website built with Vite, React, Typ
 - **UI Components**: [shadcn/ui](https://ui.shadcn.com/) / Radix UI
 - **CMS**: [Contentful](https://www.contentful.com/)
 - **State & Data Fetching**: [TanStack Query](https://tanstack.com/query/latest)
-- **Monitoring**: [Sentry](https://sentry.io/)
 - **Testing**: [Vitest](https://vitest.dev/) + React Testing Library
 
 ## 📦 Getting Started
@@ -46,7 +44,6 @@ Modern, responsive artist & design portfolio website built with Vite, React, Typ
    ```env
    VITE_CONTENTFUL_SPACE_ID=your_space_id
    VITE_CONTENTFUL_ACCESS_TOKEN=your_access_token
-   VITE_SENTRY_DSN=your_sentry_dsn
    ```
 
 4. Start the development server:
