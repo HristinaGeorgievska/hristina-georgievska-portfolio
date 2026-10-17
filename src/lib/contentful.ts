@@ -76,11 +76,29 @@ export interface Video {
   description?: string;
 }
 
-// Create Contentful client
-const client = createClient({
-  space: import.meta.env.VITE_CONTENTFUL_SPACE_ID || "",
-  accessToken: import.meta.env.VITE_CONTENTFUL_ACCESS_TOKEN || "",
-});
+// Create Contentful client lazily to avoid throwing during import when env vars are missing
+let cachedClient: ReturnType<typeof createClient> | null = null;
+
+function getClient() {
+  if (cachedClient) return cachedClient;
+
+  const space = import.meta.env.VITE_CONTENTFUL_SPACE_ID;
+  const accessToken = import.meta.env.VITE_CONTENTFUL_ACCESS_TOKEN;
+
+  if (!space || !accessToken) {
+    console.warn(
+      "Contentful configuration missing: VITE_CONTENTFUL_SPACE_ID and VITE_CONTENTFUL_ACCESS_TOKEN are required to fetch CMS content."
+    );
+    return null;
+  }
+
+  cachedClient = createClient({
+    space,
+    accessToken,
+  });
+
+  return cachedClient;
+}
 
 /**
  * Parse YouTube/Vimeo URL into embeddable iframe URL
@@ -156,6 +174,9 @@ const COLLECTION_LIST_SELECT = [
 export async function getCollections(
   category: GalleryCategory
 ): Promise<PhotoCollection[]> {
+  const client = getClient();
+  if (!client) return [];
+
   const response = await client.getEntries<PhotoCollectionSkeleton>({
     content_type: "photoCollection",
     "fields.category": category,
@@ -202,6 +223,9 @@ export async function getCollections(
 export async function getCollectionBySlug(
   slug: string
 ): Promise<PhotoCollection | null> {
+  const client = getClient();
+  if (!client) return null;
+
   const response = await client.getEntries<PhotoCollectionSkeleton>({
     content_type: "photoCollection",
     "fields.slug": slug,
@@ -236,6 +260,9 @@ export async function getCollectionBySlug(
  * Fetch all videos
  */
 export async function getVideos(): Promise<Video[]> {
+  const client = getClient();
+  if (!client) return [];
+
   const response = await client.getEntries<VideoSkeleton>({
     content_type: "video",
     order: ["fields.order" as const],

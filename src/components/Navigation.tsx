@@ -11,7 +11,8 @@ const Navigation = ({ activeSection }: NavigationProps) => {
   const navItems = [
     { id: "fashion", label: "Fashion", path: "/" },
     { id: "beauty", label: "Beauty", path: "/beauty" },
-    { id: "advertising", label: "Advertising", path: "/advertising" },
+    // Temporarily hidden until advertising items are available:
+    // { id: "advertising", label: "Advertising", path: "/advertising" },
     { id: "video", label: "Video", path: "/video" },
     { id: "contact", label: "Contact", path: "/contact" },
   ];
