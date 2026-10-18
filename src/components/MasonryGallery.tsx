@@ -14,7 +14,7 @@ const categoryLabel: Record<string, string> = {
 };
 
 const MobileSectionHeading = ({ category }: { category: string }) => (
-  <h2 className="md:hidden font-serif text-2xl tracking-widest text-foreground text-center pt-6 pb-2">
+  <h2 className="md:hidden font-serif text-2xl uppercase tracking-widest text-foreground text-center pt-6 pb-2">
     {categoryLabel[category] ?? category}
   </h2>
 );

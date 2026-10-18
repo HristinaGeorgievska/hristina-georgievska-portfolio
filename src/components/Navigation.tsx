@@ -22,29 +22,36 @@ const Navigation = ({ activeSection }: NavigationProps) => {
       <nav className="flex justify-center py-3 md:py-6">
         {/* Desktop Navigation */}
         <ul className="hidden md:flex gap-10">
-          {navItems.map((item) => (
-            <li key={item.id}>
-              <Link
-                to={item.path}
-                className={`relative inline-block py-1 text-sm uppercase tracking-[0.1em] transition-all duration-300 hover:text-foreground ${
-                  activeSection === item.id
-                    ? "text-foreground font-medium"
-                    : "text-muted-foreground"
-                }`}
-              >
-                {item.label}
-                {activeSection === item.id && (
-                  <span className="absolute bottom-0 left-0 right-[0.1em] h-[1px] bg-foreground transition-all duration-300" />
-                )}
-              </Link>
-            </li>
-          ))}
+          {navItems.map((item) => {
+            const isActive = activeSection === item.id;
+            return (
+              <li key={item.id}>
+                <Link
+                  to={item.path}
+                  className={`group relative inline-block py-1 text-sm uppercase tracking-[0.1em] transition-colors duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-4 rounded-xs ${
+                    isActive
+                      ? "text-foreground font-medium"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {item.label}
+                  <span
+                    className={`absolute bottom-0 left-0 right-[0.1em] h-[1px] bg-foreground transition-all duration-300 ease-out origin-left ${
+                      isActive
+                        ? "scale-x-100 opacity-100"
+                        : "scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-100 group-focus-visible:scale-x-100 group-focus-visible:opacity-100"
+                    }`}
+                  />
+                </Link>
+              </li>
+            );
+          })}
         </ul>
 
         {/* Mobile Hamburger Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden p-2 text-foreground relative z-[60]"
+          className="md:hidden p-2 text-foreground relative z-[60] transition-transform duration-200 active:scale-90 hover:opacity-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground rounded-sm"
           aria-label={isOpen ? "Close menu" : "Open menu"}
         >
           <div className="relative w-6 h-6">
@@ -83,28 +90,35 @@ const Navigation = ({ activeSection }: NavigationProps) => {
 
         {/* Centered Menu Content */}
         <div className="relative z-10 flex flex-col items-center justify-center h-full gap-8">
-          {navItems.map((item, index) => (
-            <Link
-              key={item.id}
-              to={item.path}
-              onClick={() => setIsOpen(false)}
-              className={`relative inline-block py-1 text-2xl uppercase tracking-[0.15em] transition-all duration-300 hover:text-foreground ${
-                activeSection === item.id
-                  ? "text-foreground font-medium"
-                  : "text-muted-foreground"
-              }`}
-              style={{
-                transform: isOpen ? "translateY(0)" : "translateY(20px)",
-                opacity: isOpen ? 1 : 0,
-                transition: `all 0.4s ease-out ${index * 0.1 + 0.2}s`,
-              }}
-            >
-              {item.label}
-              {activeSection === item.id && (
-                <span className="absolute bottom-0 left-0 right-[0.15em] h-[1.5px] bg-foreground transition-all duration-300" />
-              )}
-            </Link>
-          ))}
+          {navItems.map((item, index) => {
+            const isActive = activeSection === item.id;
+            return (
+              <Link
+                key={item.id}
+                to={item.path}
+                onClick={() => setIsOpen(false)}
+                className={`group relative inline-block py-1 text-2xl uppercase tracking-[0.15em] transition-all duration-300 active:scale-95 ${
+                  isActive
+                    ? "text-foreground font-medium"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                style={{
+                  transform: isOpen ? "translateY(0)" : "translateY(20px)",
+                  opacity: isOpen ? 1 : 0,
+                  transition: `all 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${index * 0.08 + 0.15}s`,
+                }}
+              >
+                {item.label}
+                <span
+                  className={`absolute bottom-0 left-0 right-[0.15em] h-[1.5px] bg-foreground transition-all duration-300 ease-out origin-left ${
+                    isActive
+                      ? "scale-x-100 opacity-100"
+                      : "scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-100"
+                  }`}
+                />
+              </Link>
+            );
+          })}
         </div>
       </div>
     </>

@@ -242,7 +242,7 @@ const VideoSection = () => {
   if (isLoading) {
     return (
       <section id="video-section" className="pt-8 pb-16 px-4 md:py-16 md:px-8">
-        <h2 className="md:hidden font-serif text-2xl tracking-widest text-foreground text-center pb-6">Video</h2>
+        <h2 className="md:hidden font-serif text-2xl uppercase tracking-widest text-foreground text-center pb-6">Video</h2>
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[...Array(4)].map((_, i) => (
@@ -257,7 +257,7 @@ const VideoSection = () => {
   if (isError) {
     return (
       <section id="video-section" className="pt-8 pb-16 px-4 md:py-16 md:px-8">
-        <h2 className="md:hidden font-serif text-2xl tracking-widest text-foreground text-center pb-6">Video</h2>
+        <h2 className="md:hidden font-serif text-2xl uppercase tracking-widest text-foreground text-center pb-6">Video</h2>
         <div className="max-w-5xl mx-auto">
           <p className="text-center text-muted-foreground">
             Failed to load videos. Please try again later.
@@ -298,7 +298,7 @@ const VideoSection = () => {
       )}
 
       <section id="video-section" className="pt-8 pb-16 px-4 md:py-16 md:px-8">
-        <h2 className="md:hidden font-serif text-2xl tracking-widest text-foreground text-center pb-6">Video</h2>
+        <h2 className="md:hidden font-serif text-2xl uppercase tracking-widest text-foreground text-center pb-6">Video</h2>
         <h2 className="sr-only">Video Portfolio</h2>
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

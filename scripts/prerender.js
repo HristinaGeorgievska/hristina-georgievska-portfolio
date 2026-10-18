@@ -20,7 +20,7 @@ const sections = [
     activeId: "beauty",
     gridHtml: `
       <section>
-        <h2 class="md:hidden font-serif text-2xl tracking-widest text-foreground text-center pt-6 pb-2">Beauty</h2>
+        <h2 class="md:hidden font-serif text-2xl uppercase tracking-widest text-foreground text-center pt-6 pb-2">Beauty</h2>
         <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 py-8">
           <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>
           <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>
@@ -38,7 +38,7 @@ const sections = [
     activeId: "video",
     gridHtml: `
       <section id="video-section" class="pt-8 pb-16 px-4 md:py-16 md:px-8">
-        <h2 class="md:hidden font-serif text-2xl tracking-widest text-foreground text-center pb-6">Video</h2>
+        <h2 class="md:hidden font-serif text-2xl uppercase tracking-widest text-foreground text-center pb-6">Video</h2>
         <h2 class="sr-only">Video Portfolio</h2>
         <div class="max-w-5xl mx-auto">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -79,9 +79,12 @@ function generateNav(activeId) {
     .map((item) => {
       const isActive = item.id === activeId;
       const cls = isActive
-        ? "relative inline-block py-1 text-sm uppercase tracking-[0.1em] text-foreground font-medium"
-        : "relative inline-block py-1 text-sm uppercase tracking-[0.1em] text-muted-foreground hover:text-foreground";
-      const underline = isActive ? '<span class="absolute bottom-0 left-0 right-[0.1em] h-[1px] bg-foreground"></span>' : '';
+        ? "group relative inline-block py-1 text-sm uppercase tracking-[0.1em] text-foreground font-medium transition-colors duration-200"
+        : "group relative inline-block py-1 text-sm uppercase tracking-[0.1em] text-muted-foreground hover:text-foreground transition-colors duration-200";
+      const underlineClass = isActive
+        ? "scale-x-100 opacity-100"
+        : "scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-100";
+      const underline = `<span class="absolute bottom-0 left-0 right-[0.1em] h-[1px] bg-foreground transition-all duration-300 ease-out origin-left ${underlineClass}"></span>`;
       return `<li><a href="${item.path}" class="${cls}">${item.label}${underline}</a></li>`;
     })
     .join("\n            ");
