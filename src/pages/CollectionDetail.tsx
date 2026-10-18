@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useCollection } from "@/hooks/use-contentful";
-import { buildSrcSet } from "@/lib/contentful";
+import { buildSrcSet, buildLqipUrl } from "@/lib/contentful";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import Lightbox from "@/components/Lightbox";
@@ -26,35 +26,58 @@ const PhotoItem = ({
   onClick: () => void;
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const isAboveTheFold = index < 4;
+  const isLcp = index < 2;
+
   const { ref, isVisible } = useIntersectionObserver({
     threshold: 0.1,
     rootMargin: "50px",
   });
 
+  const showContent = isAboveTheFold || isVisible;
+  const lqipUrl = buildLqipUrl(src);
+
   return (
     <div
-      ref={ref}
+      ref={isAboveTheFold ? undefined : ref}
       className={`mb-4 break-inside-avoid cursor-pointer group relative overflow-hidden rounded-xl shadow-md transition-all duration-500 ease-out ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+        showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
       }`}
       // Stagger per-batch so each new batch animates within 1.5 s
-      style={{ transitionDelay: `${(index % PAGE_SIZE) * 75}ms` }}
+      style={{
+        transitionDelay: isAboveTheFold ? "0ms" : `${(index % PAGE_SIZE) * 75}ms`,
+      }}
       onClick={onClick}
     >
-      {!isLoaded && (
-        <Skeleton className="w-full aspect-[3/4] absolute inset-0 z-10" />
-      )}
-      <img
-        src={src}
-        srcSet={buildSrcSet(src)}
-        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        alt={altText}
-        className={`w-full h-auto object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-90 ${
-          isLoaded ? "opacity-100" : "opacity-0"
-        }`}
-        loading="lazy"
-        onLoad={() => setIsLoaded(true)}
-      />
+      <div className="relative w-full aspect-[3/4] overflow-hidden bg-neutral-200 dark:bg-neutral-800">
+        {/* LQIP blurred background placeholder */}
+        {lqipUrl && !isLoaded && (
+          <img
+            src={lqipUrl}
+            alt=""
+            aria-hidden="true"
+            width={20}
+            height={27}
+            className="absolute inset-0 w-full h-full object-cover filter blur-md scale-105 pointer-events-none"
+            decoding="async"
+          />
+        )}
+        <img
+          src={src}
+          srcSet={buildSrcSet(src)}
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          alt={altText}
+          width={800}
+          height={1067}
+          className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-90 ${
+            isLoaded ? "opacity-100" : "opacity-0"
+          }`}
+          loading={isAboveTheFold ? "eager" : "lazy"}
+          decoding="async"
+          fetchPriority={isLcp ? "high" : undefined}
+          onLoad={() => setIsLoaded(true)}
+        />
+      </div>
     </div>
   );
 };

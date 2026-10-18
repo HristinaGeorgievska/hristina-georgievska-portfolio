@@ -3,7 +3,7 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useVideos } from "@/hooks/use-contentful";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
+import { buildLqipUrl } from "@/lib/contentful";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -160,7 +160,7 @@ const VideoModal = ({
 };
 
 // ---------------------------------------------------------------------------
-// VideoCard — hover overlay identical to AnimatedGalleryItem
+// VideoCard — lightweight poster with reserved aspect ratio & immediate render
 // ---------------------------------------------------------------------------
 const VideoCard = ({
   video,
@@ -172,48 +172,54 @@ const VideoCard = ({
   onPlay: (index: number) => void;
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
-  const { ref, isVisible } = useIntersectionObserver({
-    threshold: 0.1,
-    rootMargin: "50px",
-  });
+  const isAboveTheFold = index < 2;
+  const lqipUrl = buildLqipUrl(video.thumbnailUrl);
 
   return (
-    <div
-      ref={ref}
-      className={`group relative overflow-hidden rounded-xl shadow-md transition-all duration-500 ease-out ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-      }`}
-      style={{ transitionDelay: `${index * 75}ms` }}
-    >
+    <div className="group relative overflow-hidden rounded-xl shadow-md bg-neutral-200 dark:bg-neutral-800 aspect-video">
       <button
-        className="block w-full text-left"
+        className="block w-full h-full text-left relative"
         onClick={() => onPlay(index)}
         aria-label={`Play ${video.title}`}
       >
-        {/* Skeleton */}
-        {!isLoaded && video.thumbnailUrl && (
-          <Skeleton className="w-full aspect-video absolute inset-0 z-10" />
-        )}
-
-        {/* Thumbnail — same scale+brightness as AnimatedGalleryItem */}
         {video.thumbnailUrl ? (
-          <img
-            src={video.thumbnailUrl}
-            alt={video.title}
-            className={`w-full aspect-video object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-90 ${
-              isLoaded ? "opacity-100" : "opacity-0"
-            }`}
-            loading="lazy"
-            onLoad={() => setIsLoaded(true)}
-          />
+          <>
+            {/* LQIP blurred placeholder */}
+            {lqipUrl && !isLoaded && (
+              <img
+                src={lqipUrl}
+                alt=""
+                aria-hidden="true"
+                width={20}
+                height={11}
+                className="absolute inset-0 w-full h-full object-cover filter blur-md scale-105 pointer-events-none"
+                decoding="async"
+              />
+            )}
+
+            {/* Poster image */}
+            <img
+              src={video.thumbnailUrl}
+              alt={video.title}
+              width={800}
+              height={450}
+              className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-90 ${
+                isLoaded ? "opacity-100" : "opacity-0"
+              }`}
+              loading={isAboveTheFold ? "eager" : "lazy"}
+              decoding="async"
+              fetchPriority={isAboveTheFold ? "high" : undefined}
+              onLoad={() => setIsLoaded(true)}
+            />
+          </>
         ) : (
-          <div className="w-full aspect-video bg-secondary flex items-center justify-center">
+          <div className="w-full h-full bg-secondary flex items-center justify-center">
             <p className="text-muted-foreground text-sm tracking-wider">Coming Soon</p>
           </div>
         )}
 
         {/* Title overlay — always visible */}
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/70 to-transparent p-6">
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/70 to-transparent p-6 z-10">
           <div className="text-white flex flex-col justify-end gap-1">
             <p className="text-2xl font-bold">{video.title}</p>
             <p className="text-xs font-medium uppercase tracking-wider mt-2 opacity-60 transition-opacity duration-300 group-hover:opacity-100">

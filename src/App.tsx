@@ -8,7 +8,7 @@ import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persist
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
-const Index = React.lazy(() => import("./pages/Index"));
+import Index from "./pages/Index";
 const CollectionDetail = React.lazy(() => import("./pages/CollectionDetail"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 
@@ -31,8 +31,14 @@ const localStoragePersister = createSyncStoragePersister({
 });
 
 const FallbackLoader = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+  <div className="min-h-screen bg-background">
+    <div className="max-w-5xl mx-auto px-4 py-8">
+      <div className="columns-1 md:columns-2 lg:columns-3 gap-4">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="mb-4 aspect-[3/4] bg-muted/30 rounded-xl animate-pulse" />
+        ))}
+      </div>
+    </div>
   </div>
 );
 

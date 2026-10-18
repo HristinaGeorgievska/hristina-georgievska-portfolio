@@ -51,6 +51,21 @@ export function buildSrcSet(url?: string): string | undefined {
     .join(", ");
 }
 
+/**
+ * Generate a tiny blurred placeholder (LQIP) URL for a Contentful image URL.
+ * Strips existing dimensions and requests a 20px wide WebP image at low quality.
+ */
+export function buildLqipUrl(url?: string): string | undefined {
+  if (!url || typeof url !== "string" || !url.includes("ctfassets.net")) {
+    return undefined;
+  }
+  const base = url.replace(/([?&])w=\d+(&|$)/, (_m, pre, post) =>
+    post ? pre : ""
+  );
+  const sep = base.includes("?") ? "&" : "?";
+  return `${base}${sep}w=20&q=20&fm=webp`;
+}
+
 // --- Video ---
 
 interface VideoSkeleton {

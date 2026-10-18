@@ -40,7 +40,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <Navigation activeSection={activeSection} />
-      <main>{renderSection()}</main>
+      <main className="min-h-[75vh]">{renderSection()}</main>
       <Footer />
       <ScrollToTop />
     </div>

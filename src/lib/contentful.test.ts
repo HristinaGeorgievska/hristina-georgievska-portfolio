@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseEmbedUrl, buildSrcSet } from "./contentful";
+import { parseEmbedUrl, buildSrcSet, buildLqipUrl } from "./contentful";
 
 describe("parseEmbedUrl", () => {
   it("normalizes YouTube and Vimeo URLs to allowed embed origins", () => {
@@ -31,6 +31,22 @@ describe("buildSrcSet", () => {
     expect(buildSrcSet("")).toBeUndefined();
     expect(buildSrcSet(undefined)).toBeUndefined();
     expect(buildSrcSet("https://external-site.com/image.jpg")).toBeUndefined();
+  });
+});
+
+describe("buildLqipUrl", () => {
+  it("generates 20px low quality placeholder for Contentful asset URLs", () => {
+    const src = "https://images.ctfassets.net/space/asset/test.jpg?fm=webp&q=80&w=800";
+    const lqip = buildLqipUrl(src);
+    expect(lqip).toBe(
+      "https://images.ctfassets.net/space/asset/test.jpg?fm=webp&q=80&w=20&q=20&fm=webp"
+    );
+  });
+
+  it("returns undefined for non-Contentful or missing URLs", () => {
+    expect(buildLqipUrl("")).toBeUndefined();
+    expect(buildLqipUrl(undefined)).toBeUndefined();
+    expect(buildLqipUrl("https://example.com/photo.jpg")).toBeUndefined();
   });
 });
 

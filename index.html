@@ -40,10 +40,109 @@
         }
       }
     </script>
+    <link
+      rel="preload"
+      href="/fonts/playfair-display-latin-400-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/inter-latin-400-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <style>
+      @font-face {
+        font-family: 'Playfair Display';
+        font-style: normal;
+        font-display: optional;
+        font-weight: 400;
+        src: url('/fonts/playfair-display-latin-400-normal.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-display: optional;
+        font-weight: 400;
+        src: url('/fonts/inter-latin-400-normal.woff2') format('woff2');
+      }
+      :root {
+        --background: 0 0% 100%;
+        --foreground: 265 4% 12.9%;
+        --muted-foreground: 257 4.6% 55.4%;
+      }
+      body {
+        margin: 0;
+        background-color: hsl(var(--background));
+        color: hsl(var(--foreground));
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .font-serif {
+        font-family: 'Playfair Display', ui-serif, Georgia, serif;
+      }
+    </style>
   </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="min-h-screen bg-background">
+        <header class="pt-8 pb-3 md:pt-12 md:pb-6 text-center">
+          <h1 class="font-serif text-3xl md:text-4xl tracking-widest text-foreground">
+            HRISTINA <span class="font-bold">GEORGIEVSKA</span>
+          </h1>
+          <p class="mt-2 text-sm tracking-[0.3em] text-muted-foreground uppercase">
+            Makeup Artist
+          </p>
+        </header>
+        <nav class="flex justify-center py-3 md:py-6">
+          <ul class="hidden md:flex gap-10">
+            <li>
+              <a href="/" class="text-sm tracking-wider text-foreground font-medium">Fashion</a>
+            </li>
+            <li>
+              <a href="/beauty" class="text-sm tracking-wider text-muted-foreground">Beauty</a>
+            </li>
+            <li>
+              <a href="/video" class="text-sm tracking-wider text-muted-foreground">Video</a>
+            </li>
+            <li>
+              <a href="/contact" class="text-sm tracking-wider text-muted-foreground">Contact</a>
+            </li>
+          </ul>
+          <div class="md:hidden p-2 text-foreground relative z-[60]" aria-label="Menu">
+            <div class="relative w-6 h-6">
+              <span class="absolute left-0 block h-0.5 w-6 bg-foreground top-1"></span>
+              <span class="absolute left-0 top-3 block h-0.5 w-6 bg-foreground opacity-100"></span>
+              <span class="absolute left-0 block h-0.5 w-6 bg-foreground top-5"></span>
+            </div>
+          </div>
+        </nav>
+        <main class="min-h-[75vh]">
+          <section>
+            <h2 class="md:hidden font-serif text-2xl tracking-widest text-foreground text-center pt-6 pb-2">
+              Fashion
+            </h2>
+            <div class="max-w-5xl mx-auto columns-1 md:columns-2 lg:columns-3 gap-4 px-4 py-8">
+              <div class="mb-4 aspect-[3/4] rounded-xl bg-muted/30"></div>
+              <div class="mb-4 aspect-[3/4] rounded-xl bg-muted/30"></div>
+              <div class="mb-4 aspect-[3/4] rounded-xl bg-muted/30"></div>
+              <div class="mb-4 aspect-[3/4] rounded-xl bg-muted/30"></div>
+              <div class="mb-4 aspect-[3/4] rounded-xl bg-muted/30"></div>
+              <div class="mb-4 aspect-[3/4] rounded-xl bg-muted/30"></div>
+            </div>
+          </section>
+        </main>
+        <footer class="py-8 text-center">
+          <p class="text-sm text-muted-foreground tracking-wider">
+            © 2026 Hristina Georgievska. All rights reserved.
+          </p>
+        </footer>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
