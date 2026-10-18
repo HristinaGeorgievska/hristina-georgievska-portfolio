@@ -26,13 +26,16 @@ const Navigation = ({ activeSection }: NavigationProps) => {
             <li key={item.id}>
               <Link
                 to={item.path}
-                className={`text-sm tracking-wider transition-all duration-300 hover:text-foreground ${
+                className={`relative inline-block py-1 text-sm uppercase tracking-[0.1em] transition-all duration-300 hover:text-foreground ${
                   activeSection === item.id
                     ? "text-foreground font-medium"
                     : "text-muted-foreground"
                 }`}
               >
                 {item.label}
+                {activeSection === item.id && (
+                  <span className="absolute bottom-0 left-0 right-[0.1em] h-[1px] bg-foreground transition-all duration-300" />
+                )}
               </Link>
             </li>
           ))}
@@ -85,7 +88,7 @@ const Navigation = ({ activeSection }: NavigationProps) => {
               key={item.id}
               to={item.path}
               onClick={() => setIsOpen(false)}
-              className={`text-2xl tracking-widest transition-all duration-300 hover:text-foreground ${
+              className={`relative inline-block py-1 text-2xl uppercase tracking-[0.15em] transition-all duration-300 hover:text-foreground ${
                 activeSection === item.id
                   ? "text-foreground font-medium"
                   : "text-muted-foreground"
@@ -97,6 +100,9 @@ const Navigation = ({ activeSection }: NavigationProps) => {
               }}
             >
               {item.label}
+              {activeSection === item.id && (
+                <span className="absolute bottom-0 left-0 right-[0.15em] h-[1.5px] bg-foreground transition-all duration-300" />
+              )}
             </Link>
           ))}
         </div>

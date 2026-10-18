@@ -76,9 +76,10 @@ function generateNav(activeId) {
     .map((item) => {
       const isActive = item.id === activeId;
       const cls = isActive
-        ? "text-sm tracking-wider text-foreground font-medium"
-        : "text-sm tracking-wider text-muted-foreground hover:text-foreground";
-      return `<li><a href="${item.path}" class="${cls}">${item.label}</a></li>`;
+        ? "relative inline-block py-1 text-sm uppercase tracking-[0.1em] text-foreground font-medium"
+        : "relative inline-block py-1 text-sm uppercase tracking-[0.1em] text-muted-foreground hover:text-foreground";
+      const underline = isActive ? '<span class="absolute bottom-0 left-0 right-[0.1em] h-[1px] bg-foreground"></span>' : '';
+      return `<li><a href="${item.path}" class="${cls}">${item.label}${underline}</a></li>`;
     })
     .join("\n            ");
 
