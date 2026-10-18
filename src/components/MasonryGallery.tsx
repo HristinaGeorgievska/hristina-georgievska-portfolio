@@ -27,11 +27,9 @@ const MasonryGallery = ({ category = "fashion" }: MasonryGalleryProps) => {
     return (
       <section>
         <MobileSectionHeading category={category} />
-        <div className="max-w-5xl mx-auto columns-1 md:columns-2 lg:columns-3 gap-4 px-4 py-8">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 py-8">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="mb-4 break-inside-avoid">
-              <Skeleton className="w-full aspect-[3/4] rounded-xl" />
-            </div>
+            <div key={i} className="w-full aspect-[3/4] rounded-xl bg-muted/30" />
           ))}
         </div>
       </section>
@@ -57,7 +55,7 @@ const MasonryGallery = ({ category = "fashion" }: MasonryGalleryProps) => {
   return (
     <section>
       <MobileSectionHeading category={category} />
-      <div className="max-w-5xl mx-auto columns-1 md:columns-2 lg:columns-3 gap-4 px-4 py-8">
+      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 py-8">
         {collections.map((collection, index) => (
           <AnimatedGalleryItem
             key={collection.id}

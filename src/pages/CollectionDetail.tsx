@@ -26,8 +26,7 @@ const PhotoItem = ({
   onClick: () => void;
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
-  const isAboveTheFold = index < 4;
-  const isLcp = index < 2;
+  const isAboveTheFold = index < 6;
 
   const { ref, isVisible } = useIntersectionObserver({
     threshold: 0.1,
@@ -40,18 +39,20 @@ const PhotoItem = ({
   return (
     <div
       ref={isAboveTheFold ? undefined : ref}
-      className={`mb-4 break-inside-avoid cursor-pointer group relative overflow-hidden rounded-xl shadow-md transition-all duration-500 ease-out ${
+      className={`cursor-pointer group relative overflow-hidden rounded-xl shadow-md transition-all duration-500 ease-out ${
         showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
       }`}
       // Stagger per-batch so each new batch animates within 1.5 s
       style={{
-        transitionDelay: isAboveTheFold ? "0ms" : `${(index % PAGE_SIZE) * 75}ms`,
+        transitionDelay: isAboveTheFold
+          ? "0ms"
+          : `${(index % PAGE_SIZE % 6) * 75}ms`,
       }}
       onClick={onClick}
     >
       <div className="relative w-full aspect-[3/4] overflow-hidden bg-neutral-200 dark:bg-neutral-800">
-        {/* LQIP blurred background placeholder */}
-        {lqipUrl && !isLoaded && (
+        {/* Below-the-fold LQIP blurred background placeholder */}
+        {!isAboveTheFold && lqipUrl && !isLoaded && (
           <img
             src={lqipUrl}
             alt=""
@@ -69,13 +70,15 @@ const PhotoItem = ({
           alt={altText}
           width={800}
           height={1067}
-          className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-90 ${
-            isLoaded ? "opacity-100" : "opacity-0"
+          className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 group-hover:brightness-90 ${
+            isAboveTheFold
+              ? "opacity-100 transition-transform duration-500"
+              : `transition-all duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`
           }`}
           loading={isAboveTheFold ? "eager" : "lazy"}
           decoding="async"
-          fetchPriority={isLcp ? "high" : undefined}
-          onLoad={() => setIsLoaded(true)}
+          fetchPriority={isAboveTheFold ? "high" : undefined}
+          onLoad={isAboveTheFold ? undefined : () => setIsLoaded(true)}
         />
       </div>
     </div>
@@ -151,11 +154,9 @@ const CollectionDetail = () => {
         <div className="max-w-5xl mx-auto px-4 py-8">
           <Skeleton className="h-8 w-48 mb-2" />
           <Skeleton className="h-5 w-32 mb-8" />
-          <div className="columns-1 md:columns-2 lg:columns-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="mb-4 break-inside-avoid">
-                <Skeleton className="w-full aspect-[3/4] rounded-xl" />
-              </div>
+              <div key={i} className="w-full aspect-[3/4] rounded-xl bg-muted/30" />
             ))}
           </div>
         </div>
@@ -235,7 +236,7 @@ const CollectionDetail = () => {
       </div>
 
       {/* Photos grid — renders in batches via infinite scroll */}
-      <div className="max-w-5xl mx-auto columns-1 md:columns-2 lg:columns-3 gap-4 px-4 pb-16">
+      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 pb-16">
         {visiblePhotos.map((photoUrl, index) => {
           const altText = `${collection.title || "Portfolio"} - ${collection.client || "Gallery"} Makeup and Hair by Hristina Georgievska - Photo ${index + 1}`;
           return (

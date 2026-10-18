@@ -21,13 +21,13 @@ const sections = [
     gridHtml: `
       <section>
         <h2 class="md:hidden font-serif text-2xl tracking-widest text-foreground text-center pt-6 pb-2">Beauty</h2>
-        <div class="max-w-5xl mx-auto columns-1 md:columns-2 lg:columns-3 gap-4 px-4 py-8">
-          <div class="mb-4 aspect-[3/4] rounded-xl bg-muted/30"></div>
-          <div class="mb-4 aspect-[3/4] rounded-xl bg-muted/30"></div>
-          <div class="mb-4 aspect-[3/4] rounded-xl bg-muted/30"></div>
-          <div class="mb-4 aspect-[3/4] rounded-xl bg-muted/30"></div>
-          <div class="mb-4 aspect-[3/4] rounded-xl bg-muted/30"></div>
-          <div class="mb-4 aspect-[3/4] rounded-xl bg-muted/30"></div>
+        <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 py-8">
+          <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>
+          <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>
+          <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>
+          <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>
+          <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>
+          <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>
         </div>
       </section>
     `,

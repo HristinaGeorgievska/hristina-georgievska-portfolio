@@ -11,8 +11,7 @@ interface AnimatedGalleryItemProps {
 
 const AnimatedGalleryItem = ({ item, index }: AnimatedGalleryItemProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
-  const isAboveTheFold = index < 4;
-  const isLcp = index < 2;
+  const isAboveTheFold = index < 6;
 
   const { ref, isVisible } = useIntersectionObserver({
     threshold: 0.1,
@@ -25,18 +24,18 @@ const AnimatedGalleryItem = ({ item, index }: AnimatedGalleryItemProps) => {
   return (
     <div
       ref={isAboveTheFold ? undefined : ref}
-      className={`mb-4 break-inside-avoid group relative overflow-hidden rounded-xl shadow-md transition-all duration-500 ease-out ${
+      className={`group relative overflow-hidden rounded-xl shadow-md transition-all duration-500 ease-out ${
         showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
       }`}
       // Only delay below-the-fold reveals
       style={{
-        transitionDelay: isAboveTheFold ? "0ms" : `${Math.min(index, 8) * 75}ms`,
+        transitionDelay: isAboveTheFold ? "0ms" : `${Math.min(index % 6, 5) * 75}ms`,
       }}
     >
       <Link to={`/collection/${item.slug}`} className="block">
         <div className="relative w-full aspect-[3/4] overflow-hidden bg-neutral-200 dark:bg-neutral-800">
-          {/* LQIP blurred background placeholder */}
-          {lqipUrl && !isLoaded && (
+          {/* Below-the-fold LQIP blurred background placeholder */}
+          {!isAboveTheFold && lqipUrl && !isLoaded && (
             <img
               src={lqipUrl}
               alt=""
@@ -56,13 +55,15 @@ const AnimatedGalleryItem = ({ item, index }: AnimatedGalleryItemProps) => {
             alt={`${item.title || "Portfolio"} - ${item.client || "Gallery"} Makeup and Hair by Hristina Georgievska`}
             width={800}
             height={1067}
-            className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-90 ${
-              isLoaded ? "opacity-100" : "opacity-0"
+            className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 group-hover:brightness-90 ${
+              isAboveTheFold
+                ? "opacity-100 transition-transform duration-500"
+                : `transition-all duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`
             }`}
             loading={isAboveTheFold ? "eager" : "lazy"}
             decoding="async"
-            fetchPriority={isLcp ? "high" : undefined}
-            onLoad={() => setIsLoaded(true)}
+            fetchPriority={isAboveTheFold ? "high" : undefined}
+            onLoad={isAboveTheFold ? undefined : () => setIsLoaded(true)}
           />
 
           {/* Hover overlay with collection info */}
