@@ -5,11 +5,12 @@ import MasonryGallery from "@/components/MasonryGallery";
 import BeautyGallery from "@/components/BeautyGallery";
 import VideoSection from "@/components/VideoSection";
 import AdvertisingSection from "@/components/AdvertisingSection";
+import AboutSection from "@/components/AboutSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 
-const VALID_SECTIONS = ["fashion", "beauty", "advertising", "video", "contact"] as const;
+const VALID_SECTIONS = ["about", "fashion", "beauty", "advertising", "video", "contact"] as const;
 type SectionType = (typeof VALID_SECTIONS)[number];
 
 const Index = () => {
@@ -17,10 +18,12 @@ const Index = () => {
   const segment = location.pathname.replace(/^\//, "").toLowerCase();
   const activeSection: SectionType = (VALID_SECTIONS as readonly string[]).includes(segment)
     ? (segment as SectionType)
-    : "fashion";
+    : "about";
 
   const renderSection = () => {
     switch (activeSection) {
+      case "about":
+        return <AboutSection />;
       case "fashion":
         return <MasonryGallery />;
       case "beauty":
@@ -32,7 +35,7 @@ const Index = () => {
       case "contact":
         return <ContactSection />;
       default:
-        return <MasonryGallery />;
+        return <AboutSection />;
     }
   };
 

@@ -15,6 +15,24 @@ const baseHtml = fs.readFileSync(path.join(distDir, "index.html"), "utf8");
 
 const sections = [
   {
+    path: "fashion",
+    heading: "Fashion",
+    activeId: "fashion",
+    gridHtml: `
+      <section>
+        <h2 class="md:hidden font-serif text-2xl tracking-widest text-foreground text-center pt-6 pb-2">Fashion</h2>
+        <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 py-8">
+          <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>
+          <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>
+          <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>
+          <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>
+          <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>
+          <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>
+        </div>
+      </section>
+    `,
+  },
+  {
     path: "beauty",
     heading: "Beauty",
     activeId: "beauty",
@@ -66,7 +84,8 @@ const sections = [
 
 function generateNav(activeId) {
   const items = [
-    { id: "fashion", label: "Fashion", path: "/" },
+    { id: "about", label: "About", path: "/" },
+    { id: "fashion", label: "Fashion", path: "/fashion" },
     { id: "beauty", label: "Beauty", path: "/beauty" },
     { id: "video", label: "Video", path: "/video" },
     { id: "contact", label: "Contact", path: "/contact" },

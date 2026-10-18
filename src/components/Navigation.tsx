@@ -9,7 +9,8 @@ const Navigation = ({ activeSection }: NavigationProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
-    { id: "fashion", label: "Fashion", path: "/" },
+    { id: "about", label: "About", path: "/" },
+    { id: "fashion", label: "Fashion", path: "/fashion" },
     { id: "beauty", label: "Beauty", path: "/beauty" },
     // Temporarily hidden until advertising items are available:
     // { id: "advertising", label: "Advertising", path: "/advertising" },
