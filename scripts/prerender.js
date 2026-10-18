@@ -56,9 +56,12 @@ const sections = [
     heading: "Contact",
     activeId: "contact",
     gridHtml: `
-      <section class="max-w-xl mx-auto px-4 py-16 text-center">
-        <h2 class="font-serif text-2xl md:text-3xl tracking-widest text-foreground mb-4">Contact</h2>
-        <p class="text-muted-foreground text-sm tracking-wider">Loading contact details...</p>
+      <section class="max-w-xl mx-auto px-4 pt-20 sm:pt-24 md:pt-28 pb-32 md:pb-44 text-center">
+        <div class="h-9 w-72 sm:w-80 max-w-full mx-auto rounded bg-muted/30 animate-pulse"></div>
+        <div class="mt-6 md:mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
+          <div class="h-5 w-44 rounded bg-muted/30 animate-pulse"></div>
+          <div class="h-5 w-36 rounded bg-muted/30 animate-pulse"></div>
+        </div>
       </section>
     `,
   },

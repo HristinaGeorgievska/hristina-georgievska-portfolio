@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { Mail, Instagram, Phone } from "lucide-react";
 
 /**
  * Obfuscates contact details to prevent automated scraping from the JS bundle.
@@ -7,55 +6,57 @@ import { Mail, Instagram, Phone } from "lucide-react";
  */
 const useContactInfo = () =>
   useMemo(() => {
-    const emailParts = ["hristina.georgievska1", "gmail.com"];
+    const emailUser = "hristina.georgievska1";
+    const emailDomain = "gmail.com";
     const phoneParts = ["+420", "602", "367", "517"];
     return {
-      email: emailParts.join("@"),
-      emailDisplay: emailParts.join("@"),
-      phone: phoneParts.join(""),
+      emailUser,
+      emailDomain,
+      email: `${emailUser}@${emailDomain}`,
+      phone: "+420602367517",
       phoneDisplay: phoneParts.join(" "),
     };
   }, []);
 
 const ContactSection = () => {
-  const { email, emailDisplay, phone, phoneDisplay } = useContactInfo();
+  const { emailUser, emailDomain, email, phone, phoneDisplay } = useContactInfo();
 
   return (
-    <section className="pt-8 pb-16 px-4 md:py-16 md:px-8">
-      <div className="max-w-2xl mx-auto text-center">
-        <h2 className="font-serif text-2xl md:text-3xl tracking-wider text-foreground mb-8">
-          Get in Touch
-        </h2>
-        <p className="text-muted-foreground mb-10 leading-relaxed">
-          Professional make-up artist and hair stylist with 28+ years of experience in fashion, editorial, and commercial productions.
-          Based in Prague.
-        </p>
-        
-        <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
+    <section className="px-4 pt-20 sm:pt-24 md:pt-28 pb-32 md:pb-44 flex flex-col items-center justify-center text-center">
+      <div className="w-full max-w-xl mx-auto flex flex-col items-center text-center">
+        {/* Main element: Email mailto link in serif font with lining numerals */}
+        <a
+          href={`mailto:${email}`}
+          className="group relative inline-block py-1 font-serif text-[20px] min-[390px]:text-[22px] md:text-[30px] lg:text-[32px] text-foreground tracking-normal transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-foreground focus-visible:outline-offset-4 rounded-sm lining-nums [font-feature-settings:'lnum'_1]"
+          style={{ fontVariantNumeric: "lining-nums", fontFeatureSettings: '"lnum" 1' }}
+          aria-label={`Send email to ${email}`}
+        >
+          <span>{emailUser}</span>
+          <wbr />
+          <span>@{emailDomain}</span>
+          <span className="absolute bottom-0 left-0 right-0 h-[1px] bg-foreground scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100 transition-transform duration-300 origin-left" />
+        </a>
+
+        {/* Secondary elements: Instagram & Phone in nav style (darkened from muted) */}
+        <div className="mt-6 md:mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
           <a
-            href={`mailto:${email}`}
-            className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Mail size={20} />
-            <span className="text-sm tracking-wider">{emailDisplay}</span>
-          </a>
-          
-          <a
-            href="https://www.instagram.com/hristinageorgievska/"
+            href="https://instagram.com/hristinageorgievska"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+            className="group relative inline-block py-1 text-sm uppercase tracking-[0.1em] text-foreground/75 hover:text-foreground focus-visible:text-foreground transition-all duration-300 focus-visible:outline focus-visible:outline-1 focus-visible:outline-foreground focus-visible:outline-offset-4 rounded-sm"
+            aria-label="Visit Instagram profile"
           >
-            <Instagram size={20} />
-            <span className="text-sm tracking-wider">@hristinageorgievska</span>
+            @hristinageorgievska
+            <span className="absolute bottom-0 left-0 right-[0.1em] h-[1px] bg-foreground scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100 transition-transform duration-300 origin-left" />
           </a>
-          
+
           <a
             href={`tel:${phone}`}
-            className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+            className="group relative inline-block py-1 text-sm uppercase tracking-[0.1em] text-foreground/75 hover:text-foreground focus-visible:text-foreground transition-all duration-300 focus-visible:outline focus-visible:outline-1 focus-visible:outline-foreground focus-visible:outline-offset-4 rounded-sm"
+            aria-label={`Call ${phoneDisplay}`}
           >
-            <Phone size={20} />
-            <span className="text-sm tracking-wider whitespace-nowrap">{phoneDisplay}</span>
+            {phoneDisplay}
+            <span className="absolute bottom-0 left-0 right-[0.1em] h-[1px] bg-foreground scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100 transition-transform duration-300 origin-left" />
           </a>
         </div>
       </div>
