@@ -27,7 +27,7 @@ const queryClient = new QueryClient({
 // when we deploy breaking data-shape changes.
 const localStoragePersister = createSyncStoragePersister({
   storage: window.localStorage,
-  key: "hristina-portfolio-rq-cache-v1",
+  key: "hristina-portfolio-rq-cache-v2",
 });
 
 const FallbackLoader = () => (
