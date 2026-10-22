@@ -18,6 +18,7 @@ interface VideoItem {
   videoFileUrl?: string;
   thumbnailUrl?: string;
   description?: string;
+  director?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -104,13 +105,13 @@ const VideoModal = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/90 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md animate-in fade-in duration-200"
       onClick={onClose}
     >
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-6 right-6 p-2 text-background/80 hover:text-background transition-colors z-10"
+        className="absolute top-6 right-6 p-2 text-white/80 hover:text-white transition-colors z-10"
         aria-label="Close video"
       >
         <X size={28} />
@@ -119,7 +120,7 @@ const VideoModal = ({
       {/* Previous button — hidden on mobile, same as Lightbox */}
       <button
         onClick={(e) => { e.stopPropagation(); onPrevious(); }}
-        className="hidden md:block absolute left-8 p-2 text-background/80 hover:text-background transition-colors z-10"
+        className="hidden md:block absolute left-8 p-2 text-white/80 hover:text-white transition-colors z-10"
         aria-label="Previous video"
       >
         <ChevronLeft size={40} />
@@ -135,17 +136,22 @@ const VideoModal = ({
         </div>
 
         {/* Title + description — mirrors Lightbox detail block */}
-        <div className="mt-4 text-center text-background animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <h3 className="text-xl md:text-2xl font-bold mb-1">{video.title}</h3>
+        <div className="mt-4 text-center text-white animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <h3 className="text-xl md:text-2xl font-bold mb-1 text-white">{video.title}</h3>
+          {video.director && (
+            <p className="text-sm opacity-70 mb-2">
+              {/^dir(ector)?:/i.test(video.director) ? video.director : `Director: ${video.director}`}
+            </p>
+          )}
           {video.description && (
-            <div className="text-sm opacity-60 prose prose-sm max-w-xl mx-auto [&_p]:text-background/60">
+            <div className="text-sm opacity-60 prose prose-sm max-w-xl mx-auto [&_p]:text-white/60">
               <ReactMarkdown skipHtml>{video.description}</ReactMarkdown>
             </div>
           )}
         </div>
 
         {/* Counter */}
-        <div className="mt-3 text-center text-background/60 text-sm font-medium tracking-wide">
+        <div className="mt-4 text-center text-white/70 text-sm font-medium tracking-wide">
           {currentIndex + 1} / {totalVideos}
         </div>
       </div>
@@ -153,7 +159,7 @@ const VideoModal = ({
       {/* Next button — hidden on mobile, same as Lightbox */}
       <button
         onClick={(e) => { e.stopPropagation(); onNext(); }}
-        className="hidden md:block absolute right-8 p-2 text-background/80 hover:text-background transition-colors z-10"
+        className="hidden md:block absolute right-8 p-2 text-white/80 hover:text-white transition-colors z-10"
         aria-label="Next video"
       >
         <ChevronRight size={40} />
@@ -178,13 +184,23 @@ const VideoCard = ({
   const isPriority = index === 0;
   const lqipUrl = buildLqipUrl(video.thumbnailUrl);
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onPlay(index);
+    }
+  };
+
   return (
-    <div className="group relative overflow-hidden rounded-xl shadow-md bg-neutral-200 dark:bg-neutral-800 aspect-video">
-      <button
-        className="block w-full h-full text-left relative"
-        onClick={() => onPlay(index)}
-        aria-label={`Play ${video.title}`}
-      >
+    <button
+      type="button"
+      onClick={() => onPlay(index)}
+      onKeyDown={handleKeyDown}
+      aria-label={`Play ${video.title}`}
+      className="group flex flex-col w-full text-left rounded-xl cursor-pointer outline-none focus:outline-none focus-visible:outline-none"
+    >
+      {/* Flat thumbnail with corner radius matching Fashion */}
+      <div className="relative w-full aspect-video overflow-hidden rounded-xl bg-neutral-200 dark:bg-neutral-800">
         {video.thumbnailUrl ? (
           <>
             {/* LQIP blurred placeholder */}
@@ -208,7 +224,7 @@ const VideoCard = ({
               width={800}
               height={450}
               pictureClassName="absolute inset-0 h-full w-full"
-              className={`absolute inset-0 h-full w-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-90 ${
+              className={`absolute inset-0 h-full w-full object-cover scale-100 brightness-100 transition-all duration-500 ease-out [@media(hover:hover)]:group-hover:scale-105 [@media(hover:hover)]:group-hover:brightness-90 motion-reduce:group-hover:!transform-none motion-reduce:!transform-none ${
                 isLoaded ? "opacity-100" : "opacity-0"
               }`}
               loading={isPriority ? "eager" : "lazy"}
@@ -221,18 +237,22 @@ const VideoCard = ({
             <p className="text-muted-foreground text-sm tracking-wider">Coming Soon</p>
           </div>
         )}
+      </div>
 
-        {/* Title overlay — always visible */}
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/70 to-transparent p-6 z-10">
-          <div className="text-white flex flex-col justify-end gap-1">
-            <p className="text-2xl font-bold">{video.title}</p>
-            <p className="text-xs font-medium uppercase tracking-wider mt-2 opacity-60 transition-opacity duration-300 group-hover:opacity-100">
-              Watch →
-            </p>
-          </div>
-        </div>
-      </button>
-    </div>
+      {/* Caption — 10px below image, 4px between title and director */}
+      <div className="mt-[10px] w-full">
+        <p className="font-sans text-[17px] font-normal leading-snug text-foreground [text-wrap:balance] text-balance">
+          <span className="relative inline-block pb-0.5">
+            {video.title}<span className="absolute bottom-0 left-0 right-[0.1em] h-[1px] bg-foreground transition-all duration-300 ease-out origin-left scale-x-0 opacity-0 [@media(hover:hover)]:group-hover:scale-x-100 [@media(hover:hover)]:group-hover:opacity-100 group-focus-visible:scale-x-100 group-focus-visible:opacity-100" />
+          </span>
+        </p>
+        {video.director && (
+          <p className="text-sm text-muted-foreground mt-[4px] font-normal">
+            {/^dir(ector)?:/i.test(video.director) ? video.director : `Director: ${video.director}`}
+          </p>
+        )}
+      </div>
+    </button>
   );
 };
 
@@ -248,9 +268,15 @@ const VideoSection = () => {
       <section id="video-section" className="pt-8 pb-16 px-4 md:py-16 md:px-8">
         <h2 className="md:hidden font-serif text-2xl uppercase tracking-widest text-foreground text-center pb-6">Video</h2>
         <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-[44px]">
             {[...Array(4)].map((_, i) => (
-              <Skeleton key={i} className="aspect-video rounded-xl" />
+              <div key={i} className="flex flex-col">
+                <Skeleton className="aspect-video rounded-xl" />
+                <div className="mt-[10px] space-y-1">
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -273,13 +299,40 @@ const VideoSection = () => {
 
   const isEmpty = videos.length === 0;
   const displayVideos: VideoItem[] = isEmpty
-    ? [1, 2, 3, 4].map((n) => ({
-        id: String(n),
-        title: `Video ${n}`,
-        thumbnailUrl: undefined,
-        embedUrl: undefined,
-        videoFileUrl: undefined,
-      }))
+    ? [
+        {
+          id: "1",
+          title: "Vogue Czechoslovakia",
+          director: "Branislav Šimončík",
+          thumbnailUrl: undefined,
+          embedUrl: undefined,
+          videoFileUrl: undefined,
+        },
+        {
+          id: "2",
+          title: "Elle Beauty Special",
+          director: "Matúš Tóth",
+          thumbnailUrl: undefined,
+          embedUrl: undefined,
+          videoFileUrl: undefined,
+        },
+        {
+          id: "3",
+          title: "Harper's Bazaar Editorial",
+          director: "Lukáš Dvořák",
+          thumbnailUrl: undefined,
+          embedUrl: undefined,
+          videoFileUrl: undefined,
+        },
+        {
+          id: "4",
+          title: "Mercedes-Benz Campaign",
+          director: "Petr Kurečka",
+          thumbnailUrl: undefined,
+          embedUrl: undefined,
+          videoFileUrl: undefined,
+        },
+      ]
     : videos;
 
   const handlePrevious = () =>
@@ -305,13 +358,13 @@ const VideoSection = () => {
         <h2 className="md:hidden font-serif text-2xl uppercase tracking-widest text-foreground text-center pb-6">Video</h2>
         <h2 className="sr-only">Video Portfolio</h2>
         <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-[44px]">
             {displayVideos.map((video, index) => (
               <VideoCard
                 key={video.id}
                 video={video}
                 index={index}
-                onPlay={isEmpty ? () => {} : setActiveIndex}
+                onPlay={setActiveIndex}
               />
             ))}
           </div>

@@ -152,6 +152,7 @@ interface VideoSkeleton {
     videoFile: EntryFieldTypes.AssetLink;
     thumbnail: EntryFieldTypes.AssetLink;
     description: EntryFieldTypes.Text;
+    director?: EntryFieldTypes.Text;
     order: EntryFieldTypes.Integer;
   };
 }
@@ -165,6 +166,7 @@ export interface Video {
   videoFileUrl?: string;
   thumbnailUrl?: string;
   description?: string;
+  director?: string;
 }
 
 // Create Contentful client lazily to avoid throwing during import when env vars are missing
@@ -379,9 +381,10 @@ export async function getVideos(): Promise<Video[]> {
   });
 
   return response.items.map((entry) => {
-    const fields = entry.fields;
+    const fields = entry.fields as typeof entry.fields & { Director?: unknown };
     const rawEmbed = fields.embedUrl ? String(fields.embedUrl) : "";
     const videoFileUrl = getAssetUrl(fields.videoFile);
+    const rawDirector = fields.director ?? fields.Director;
 
     return {
       id: entry.sys.id,
@@ -392,6 +395,7 @@ export async function getVideos(): Promise<Video[]> {
       description: fields.description
         ? String(fields.description)
         : undefined,
+      director: rawDirector ? String(rawDirector) : undefined,
     };
   });
 }
