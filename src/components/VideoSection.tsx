@@ -241,13 +241,13 @@ const VideoCard = ({
 
       {/* Caption — 10px below image, 4px between title and director */}
       <div className="mt-[10px] w-full">
-        <p className="font-sans text-[17px] font-normal leading-snug text-foreground [text-wrap:balance] text-balance">
+        <p className="font-sans text-[14px] md:text-[15px] uppercase tracking-[0.08em] font-medium leading-snug text-foreground [text-wrap:balance] text-balance">
           <span className="relative inline-block pb-0.5">
-            {video.title}<span className="absolute bottom-0 left-0 right-[0.1em] h-[1px] bg-foreground transition-all duration-300 ease-out origin-left scale-x-0 opacity-0 [@media(hover:hover)]:group-hover:scale-x-100 [@media(hover:hover)]:group-hover:opacity-100 group-focus-visible:scale-x-100 group-focus-visible:opacity-100" />
+            {video.title}<span className="absolute bottom-0 left-0 right-[0.08em] h-[1px] bg-foreground transition-all duration-300 ease-out origin-left scale-x-0 opacity-0 [@media(hover:hover)]:group-hover:scale-x-100 [@media(hover:hover)]:group-hover:opacity-100 group-focus-visible:scale-x-100 group-focus-visible:opacity-100" />
           </span>
         </p>
         {video.director && (
-          <p className="text-sm text-muted-foreground mt-[4px] font-normal">
+          <p className="text-xs text-muted-foreground mt-[4px] font-normal tracking-normal">
             {/^dir(ector)?:/i.test(video.director) ? video.director : `Director: ${video.director}`}
           </p>
         )}
