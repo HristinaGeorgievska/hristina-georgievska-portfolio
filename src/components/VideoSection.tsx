@@ -1,6 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
-import ReactMarkdown from "react-markdown";
 import { useVideos } from "@/hooks/use-contentful";
 import { Skeleton } from "@/components/ui/skeleton";
 import { buildLqipUrl } from "@/lib/contentful";
@@ -120,7 +119,7 @@ const VideoModal = ({
       {/* Previous button — hidden on mobile, same as Lightbox */}
       <button
         onClick={(e) => { e.stopPropagation(); onPrevious(); }}
-        className="hidden md:block absolute left-8 p-2 text-white/80 hover:text-white transition-colors z-10"
+        className="hidden md:block absolute left-8 top-1/2 -translate-y-1/2 p-2 text-white/80 hover:text-white transition-colors z-10"
         aria-label="Previous video"
       >
         <ChevronLeft size={40} />
@@ -135,18 +134,15 @@ const VideoModal = ({
           <VideoPlayer video={video} />
         </div>
 
-        {/* Title + description — mirrors Lightbox detail block */}
+        {/* Title + director */}
         <div className="mt-4 text-center text-white animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <h3 className="text-xl md:text-2xl font-bold mb-1 text-white">{video.title}</h3>
+          <h3 className="font-sans text-lg sm:text-xl md:text-2xl uppercase tracking-[0.08em] font-medium leading-snug text-white [text-wrap:balance] text-balance">
+            {video.title}
+          </h3>
           {video.director && (
-            <p className="text-sm opacity-70 mb-2">
+            <p className="text-sm sm:text-base md:text-[17px] text-white/80 mt-1.5 font-normal tracking-normal">
               Director: {video.director.replace(/^director:\s*/i, "").trim()}
             </p>
-          )}
-          {video.description && (
-            <div className="text-sm opacity-60 prose prose-sm max-w-xl mx-auto [&_p]:text-white/60">
-              <ReactMarkdown skipHtml>{video.description}</ReactMarkdown>
-            </div>
           )}
         </div>
 
@@ -159,7 +155,7 @@ const VideoModal = ({
       {/* Next button — hidden on mobile, same as Lightbox */}
       <button
         onClick={(e) => { e.stopPropagation(); onNext(); }}
-        className="hidden md:block absolute right-8 p-2 text-white/80 hover:text-white transition-colors z-10"
+        className="hidden md:block absolute right-8 top-1/2 -translate-y-1/2 p-2 text-white/80 hover:text-white transition-colors z-10"
         aria-label="Next video"
       >
         <ChevronRight size={40} />
@@ -247,7 +243,7 @@ const VideoCard = ({
           </span>
         </p>
         {video.director && (
-          <p className="text-xs text-muted-foreground mt-[4px] font-normal tracking-normal">
+          <p className="text-[13px] text-foreground/75 mt-[4px] font-normal tracking-normal">
             Director: {video.director.replace(/^director:\s*/i, "").trim()}
           </p>
         )}

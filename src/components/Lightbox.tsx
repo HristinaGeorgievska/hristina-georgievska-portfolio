@@ -89,7 +89,7 @@ const Lightbox = ({
           e.stopPropagation();
           onPrevious();
         }}
-        className="hidden md:block absolute left-8 p-2 text-background/80 hover:text-background transition-colors z-10"
+        className="hidden md:block absolute left-8 top-1/2 -translate-y-1/2 p-2 text-background/80 hover:text-background transition-colors z-10"
         aria-label="Previous image"
       >
         <ChevronLeft size={40} />
@@ -147,7 +147,7 @@ const Lightbox = ({
           e.stopPropagation();
           onNext();
         }}
-        className="hidden md:block absolute right-8 p-2 text-background/80 hover:text-background transition-colors z-10"
+        className="hidden md:block absolute right-8 top-1/2 -translate-y-1/2 p-2 text-background/80 hover:text-background transition-colors z-10"
         aria-label="Next image"
       >
         <ChevronRight size={40} />
