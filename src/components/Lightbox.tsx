@@ -1,6 +1,9 @@
 import { useEffect, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useSwipe } from "@/hooks/use-swipe";
+import { ContentfulPicture } from "@/components/ContentfulPicture";
+
+const LIGHTBOX_SIZES = "(max-width: 768px) 100vw, 90vw";
 
 interface ImageDetails {
   client?: string;
@@ -91,10 +94,16 @@ const Lightbox = ({
         className="flex flex-col items-center max-w-[90vw] max-h-[90vh] animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        <img
+        <ContentfulPicture
           src={imageUrl}
+          preset="full"
+          sizes={LIGHTBOX_SIZES}
           alt={hasDetails ? `${imageDetails?.name || "Portfolio"} - ${imageDetails?.client || "Gallery"} Makeup and Hair by Hristina Georgievska` : "Makeup and Hair Portfolio Image"}
-          className="max-w-full max-h-[75vh] md:max-h-[80vh] object-contain rounded-lg shadow-2xl"
+          width={1600}
+          height={2133}
+          className="max-h-[75vh] max-w-full rounded-lg object-contain shadow-2xl md:max-h-[80vh]"
+          loading="eager"
+          fetchPriority="high"
         />
 
         {/* Project details overlay */}

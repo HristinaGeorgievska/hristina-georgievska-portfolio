@@ -2,7 +2,10 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import type { PhotoCollection } from "@/lib/contentful";
-import { buildSrcSet, buildLqipUrl } from "@/lib/contentful";
+import { buildLqipUrl } from "@/lib/contentful";
+import { ContentfulPicture } from "@/components/ContentfulPicture";
+
+const THUMBNAIL_SIZES = "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw";
 
 interface AnimatedGalleryItemProps {
   item: PhotoCollection;
@@ -12,6 +15,7 @@ interface AnimatedGalleryItemProps {
 const AnimatedGalleryItem = ({ item, index }: AnimatedGalleryItemProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const isAboveTheFold = index < 6;
+  const isPriority = index === 0;
 
   const { ref, isVisible } = useIntersectionObserver({
     threshold: 0.1,
@@ -47,22 +51,21 @@ const AnimatedGalleryItem = ({ item, index }: AnimatedGalleryItemProps) => {
             />
           )}
 
-          {/* Cover Image */}
-          <img
+          <ContentfulPicture
             src={item.coverUrl}
-            srcSet={buildSrcSet(item.coverUrl)}
-            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            preset="thumbnail"
+            sizes={THUMBNAIL_SIZES}
             alt={`${item.title || "Portfolio"} - ${item.client || "Gallery"} Makeup and Hair by Hristina Georgievska`}
             width={800}
             height={1067}
-            className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 group-hover:brightness-90 ${
+            pictureClassName="absolute inset-0 h-full w-full"
+            className={`absolute inset-0 h-full w-full object-cover group-hover:scale-105 group-hover:brightness-90 ${
               isAboveTheFold
                 ? "opacity-100 transition-transform duration-500"
                 : `transition-all duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`
             }`}
-            loading={isAboveTheFold ? "eager" : "lazy"}
-            decoding="async"
-            fetchPriority={isAboveTheFold ? "high" : undefined}
+            loading={isPriority ? "eager" : "lazy"}
+            fetchPriority={isPriority ? "high" : undefined}
             onLoad={isAboveTheFold ? undefined : () => setIsLoaded(true)}
           />
 
