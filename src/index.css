@@ -8,6 +8,24 @@
 }
 
 @font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 700;
+  src: url('/fonts/playfair-display-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+@font-face {
+  font-family: 'Playfair Display Fallback';
+  src: local('Georgia'), local('Times New Roman');
+  ascent-override: 109.7%;
+  descent-override: 27.7%;
+  line-gap-override: 0%;
+  size-adjust: 100%;
+}
+
+@font-face {
   font-family: 'Inter';
   font-style: normal;
   font-display: optional;
@@ -42,7 +60,7 @@ All colors MUST be HSL.
     --secondary-foreground: 266 4% 20.8%;
 
     --muted: 248 0.7% 96.8%;
-    --muted-foreground: 257 4.6% 55.4%;
+    --muted-foreground: 257 5% 43%;
 
     --accent: 248 0.7% 96.8%;
     --accent-foreground: 266 4% 20.8%;
@@ -86,7 +104,7 @@ All colors MUST be HSL.
 
     --font-sans: Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
 
-    --font-serif: "Playfair Display", ui-serif, Georgia, Cambria, Times New Roman, Times, serif;
+    --font-serif: "Playfair Display", "Playfair Display Fallback", ui-serif, Georgia, Cambria, Times New Roman, Times, serif;
 
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 

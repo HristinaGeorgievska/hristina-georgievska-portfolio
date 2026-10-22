@@ -54,9 +54,9 @@ export interface ContentfulImageParams {
 export const IMAGE_QUALITY = 75;
 export const JPEG_QUALITY = 80;
 
-export const CONTENTFUL_IMAGE_WIDTHS = [640, 1024, 1600, 2400] as const;
-export const THUMBNAIL_IMAGE_WIDTHS = [400, 640, 1024, 1600] as const;
-export const FULL_IMAGE_WIDTHS = [1024, 1600, 2400] as const;
+export const CONTENTFUL_IMAGE_WIDTHS = [640, 800, 1024, 1200, 1600, 2400] as const;
+export const THUMBNAIL_IMAGE_WIDTHS = [400, 640, 800, 1024, 1200, 1600] as const;
+export const FULL_IMAGE_WIDTHS = [1024, 1200, 1600, 2400] as const;
 
 function parseContentfulAssetUrl(url: string): URL | undefined {
   try {

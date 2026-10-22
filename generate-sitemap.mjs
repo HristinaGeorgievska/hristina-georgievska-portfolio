@@ -46,7 +46,7 @@ async function generateSitemap() {
       .map((item) => item.fields.slug)
       .filter(Boolean);
 
-    const baseUrl = 'https://hristinageorgievska.com';
+    const baseUrl = 'https://www.hristinageorgievska.com';
     const currentDate = new Date().toISOString().split('T')[0];
 
     let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n`;

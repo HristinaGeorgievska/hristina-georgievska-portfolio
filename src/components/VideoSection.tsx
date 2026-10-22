@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { buildLqipUrl } from "@/lib/contentful";
 import { ContentfulPicture } from "@/components/ContentfulPicture";
 
-const VIDEO_THUMB_SIZES = "(max-width: 768px) 100vw, 50vw";
+const VIDEO_THUMB_SIZES = "(max-width: 768px) calc(100vw - 32px), 50vw";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -177,7 +177,9 @@ const VideoCard = ({
   onPlay: (index: number) => void;
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const isAboveTheFold = index < 3;
   const isPriority = index === 0;
+  const isEager = index < 2;
   const lqipUrl = buildLqipUrl(video.thumbnailUrl);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -192,15 +194,14 @@ const VideoCard = ({
       type="button"
       onClick={() => onPlay(index)}
       onKeyDown={handleKeyDown}
-      aria-label={`Play ${video.title}`}
       className="group flex flex-col w-full text-left rounded-xl cursor-pointer outline-none focus:outline-none focus-visible:outline-none"
     >
       {/* Flat thumbnail with corner radius matching Fashion */}
       <div className="relative w-full aspect-video overflow-hidden rounded-xl bg-neutral-200 dark:bg-neutral-800">
         {video.thumbnailUrl ? (
           <>
-            {/* LQIP blurred placeholder */}
-            {lqipUrl && !isLoaded && (
+            {/* LQIP blurred placeholder — only below-the-fold */}
+            {!isAboveTheFold && lqipUrl && !isLoaded && (
               <img
                 src={lqipUrl}
                 alt=""
@@ -216,16 +217,20 @@ const VideoCard = ({
               src={video.thumbnailUrl}
               preset="thumbnail"
               sizes={VIDEO_THUMB_SIZES}
-              alt={video.title}
+              alt=""
               width={800}
               height={450}
               pictureClassName="absolute inset-0 h-full w-full"
               className={`absolute inset-0 h-full w-full object-cover scale-100 brightness-100 transition-all duration-500 ease-out [@media(hover:hover)]:group-hover:scale-105 [@media(hover:hover)]:group-hover:brightness-90 motion-reduce:group-hover:!transform-none motion-reduce:!transform-none ${
-                isLoaded ? "opacity-100" : "opacity-0"
+                isAboveTheFold
+                  ? "opacity-100"
+                  : isLoaded
+                    ? "opacity-100"
+                    : "opacity-0"
               }`}
-              loading={isPriority ? "eager" : "lazy"}
+              loading={isEager ? "eager" : "lazy"}
               fetchPriority={isPriority ? "high" : undefined}
-              onLoad={() => setIsLoaded(true)}
+              onLoad={isAboveTheFold ? undefined : () => setIsLoaded(true)}
             />
           </>
         ) : (

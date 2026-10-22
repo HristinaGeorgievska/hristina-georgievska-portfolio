@@ -11,14 +11,15 @@
     <meta property="og:title" content="Hristina Georgievska | Make-up Artist & Hair Stylist (Prague)" />
     <meta property="og:description" content="Professional make-up artist and hair stylist with 20+ years of experience in fashion, editorial, and commercial productions. Based in Prague." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://hristinageorgievska.com/og-image.jpg" />
+    <meta property="og:url" content="https://www.hristinageorgievska.com" />
+    <meta property="og:image" content="https://www.hristinageorgievska.com/og-image.jpg" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Hristina Georgievska | Make-up Artist & Hair Stylist (Prague)" />
     <meta name="twitter:description" content="Professional make-up artist and hair stylist with 20+ years of experience in fashion, editorial, and commercial productions. Based in Prague." />
-    <meta name="twitter:image" content="https://hristinageorgievska.com/og-image.jpg" />
+    <meta name="twitter:image" content="https://www.hristinageorgievska.com/og-image.jpg" />
     
-    <link rel="canonical" href="https://hristinageorgievska.com" />
+    <link rel="canonical" href="https://www.hristinageorgievska.com" />
     
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -32,7 +33,7 @@
         "@type": "Person",
         "name": "Hristina Georgievska",
         "jobTitle": "Make-up Artist & Hair Stylist",
-        "url": "https://hristinageorgievska.com",
+        "url": "https://www.hristinageorgievska.com",
         "address": {
           "@type": "PostalAddress",
           "addressLocality": "Prague",
@@ -40,6 +41,16 @@
         }
       }
     </script>
+    <link rel="preconnect" href="https://images.ctfassets.net" crossorigin />
+    <link rel="preconnect" href="https://cdn.contentful.com" crossorigin />
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      imagesrcset="https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=avif&amp;q=75&amp;w=400 400w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=avif&amp;q=75&amp;w=640 640w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=avif&amp;q=75&amp;w=800 800w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=avif&amp;q=75&amp;w=1024 1024w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=avif&amp;q=75&amp;w=1200 1200w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=avif&amp;q=75&amp;w=1600 1600w"
+      imagesizes="(max-width: 768px) calc(100vw - 32px), (max-width: 1024px) 50vw, calc(33vw - 32px)"
+      fetchpriority="high"
+    />
     <link
       rel="preload"
       href="/fonts/playfair-display-latin-400-normal.woff2"
@@ -63,6 +74,21 @@
         src: url('/fonts/playfair-display-latin-400-normal.woff2') format('woff2');
       }
       @font-face {
+        font-family: 'Playfair Display';
+        font-style: normal;
+        font-display: optional;
+        font-weight: 700;
+        src: url('/fonts/playfair-display-latin-400-normal.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Playfair Display Fallback';
+        src: local('Georgia'), local('Times New Roman');
+        ascent-override: 109.7%;
+        descent-override: 27.7%;
+        line-gap-override: 0%;
+        size-adjust: 100%;
+      }
+      @font-face {
         font-family: 'Inter';
         font-style: normal;
         font-display: optional;
@@ -72,7 +98,7 @@
       :root {
         --background: 0 0% 100%;
         --foreground: 265 4% 12.9%;
-        --muted-foreground: 257 4.6% 55.4%;
+        --muted-foreground: 257 5% 43%;
       }
       body {
         margin: 0;
@@ -82,7 +108,7 @@
         -webkit-font-smoothing: antialiased;
       }
       .font-serif {
-        font-family: 'Playfair Display', ui-serif, Georgia, serif;
+        font-family: 'Playfair Display', 'Playfair Display Fallback', ui-serif, Georgia, serif;
       }
     </style>
   </head>
@@ -91,7 +117,7 @@
     <div id="root">
       <div class="min-h-screen bg-background">
         <header class="pt-8 pb-3 md:pt-12 md:pb-6 text-center">
-          <h1 class="font-serif text-3xl md:text-4xl tracking-widest text-foreground">
+          <h1 class="font-serif text-3xl md:text-4xl tracking-widest text-foreground min-h-[1.25em] leading-tight">
             HRISTINA <span class="font-bold">GEORGIEVSKA</span>
           </h1>
           <p class="mt-2 text-sm tracking-[0.3em] text-muted-foreground uppercase">
@@ -127,7 +153,17 @@
               Fashion
             </h2>
             <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 py-8">
-              <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>
+              <div class="group relative overflow-hidden rounded-xl shadow-md">
+                <a href="/collection/fashion-1" class="block">
+                  <div class="relative w-full aspect-[3/4] overflow-hidden bg-neutral-200">
+                    <picture class="absolute inset-0 h-full w-full">
+                      <source type="image/avif" srcset="https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=avif&amp;q=75&amp;w=400 400w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=avif&amp;q=75&amp;w=640 640w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=avif&amp;q=75&amp;w=800 800w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=avif&amp;q=75&amp;w=1024 1024w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=avif&amp;q=75&amp;w=1200 1200w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=avif&amp;q=75&amp;w=1600 1600w" sizes="(max-width: 768px) calc(100vw - 32px), (max-width: 1024px) 50vw, calc(33vw - 32px)">
+                      <source type="image/webp" srcset="https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=webp&amp;q=75&amp;w=400 400w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=webp&amp;q=75&amp;w=640 640w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=webp&amp;q=75&amp;w=800 800w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=webp&amp;q=75&amp;w=1024 1024w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=webp&amp;q=75&amp;w=1200 1200w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=webp&amp;q=75&amp;w=1600 1600w" sizes="(max-width: 768px) calc(100vw - 32px), (max-width: 1024px) 50vw, calc(33vw - 32px)">
+                      <img src="https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=jpg&amp;q=80&amp;w=1024" srcset="https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=jpg&amp;q=80&amp;w=400 400w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=jpg&amp;q=80&amp;w=640 640w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=jpg&amp;q=80&amp;w=800 800w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=jpg&amp;q=80&amp;w=1024 1024w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=jpg&amp;q=80&amp;w=1200 1200w, https://images.ctfassets.net/4end2ob9xfig/17yFjuk2vRRscyr3W1Pm5G/44ca249575ea74ada41b01bea0f1bc52/00000830-PHOTO-2026-02-17-12-54-42.jpg?fm=jpg&amp;q=80&amp;w=1600 1600w" sizes="(max-width: 768px) calc(100vw - 32px), (max-width: 1024px) 50vw, calc(33vw - 32px)" alt="Fashion 1 - Gallery Makeup and Hair by Hristina Georgievska" width="800" height="1067" class="absolute inset-0 h-full w-full object-cover" loading="eager" fetchpriority="high">
+                    </picture>
+                  </div>
+                </a>
+              </div>
               <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>
               <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>
               <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>

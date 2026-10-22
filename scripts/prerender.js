@@ -116,9 +116,18 @@ for (const section of sections) {
 
   // Replace canonical
   html = html.replace(
-    /<link rel="canonical" href="https:\/\/hristinageorgievska\.com" \/>/,
-    `<link rel="canonical" href="https://hristinageorgievska.com/${section.path}" />`
+    /<link rel="canonical" href="https:\/\/www\.hristinageorgievska\.com" \/>/,
+    `<link rel="canonical" href="https://www.hristinageorgievska.com/${section.path}" />`
   );
+
+  // Replace og:url
+  html = html.replace(
+    /<meta property="og:url" content="https:\/\/www\.hristinageorgievska\.com" \/>/,
+    `<meta property="og:url" content="https://www.hristinageorgievska.com/${section.path}" />`
+  );
+
+  // Strip fashion hero image preload from non-fashion sections
+  html = html.replace(/<link\s+rel="preload"\s+as="image"[^>]*>\s*/gi, "");
 
   // Replace title
   html = html.replace(

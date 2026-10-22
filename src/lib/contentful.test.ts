@@ -83,10 +83,11 @@ describe("buildSrcSet", () => {
       widths: CONTENTFUL_IMAGE_WIDTHS,
     });
     expect(srcSet).toContain("fm=avif&q=75&w=640 640w");
+    expect(srcSet).toContain("fm=avif&q=75&w=800 800w");
     expect(srcSet).toContain("fm=avif&q=75&w=1024 1024w");
+    expect(srcSet).toContain("fm=avif&q=75&w=1200 1200w");
     expect(srcSet).toContain("fm=avif&q=75&w=1600 1600w");
     expect(srcSet).toContain("fm=avif&q=75&w=2400 2400w");
-    expect(srcSet).not.toContain("w=800 800w");
   });
 
   it("uses smaller widths for thumbnails and larger widths for full view", () => {
@@ -97,7 +98,12 @@ describe("buildSrcSet", () => {
     const full = buildSrcSet(ASSET, { fm: "webp", widths: FULL_IMAGE_WIDTHS });
     expect(thumbs).toContain("w=400 400w");
     expect(thumbs).toContain("w=640 640w");
+    expect(thumbs).toContain("w=800 800w");
+    expect(thumbs).toContain("w=1024 1024w");
+    expect(thumbs).toContain("w=1200 1200w");
+    expect(thumbs).toContain("w=1600 1600w");
     expect(thumbs).not.toContain("w=2400 2400w");
+    expect(full).toContain("w=1200 1200w");
     expect(full).toContain("w=2400 2400w");
     expect(full).not.toContain("w=400 400w");
     expect(full).not.toContain("w=640 640w");

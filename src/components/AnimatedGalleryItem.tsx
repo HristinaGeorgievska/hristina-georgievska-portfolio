@@ -5,7 +5,7 @@ import type { PhotoCollection } from "@/lib/contentful";
 import { buildLqipUrl } from "@/lib/contentful";
 import { ContentfulPicture } from "@/components/ContentfulPicture";
 
-const THUMBNAIL_SIZES = "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw";
+const THUMBNAIL_SIZES = "(max-width: 768px) calc(100vw - 32px), (max-width: 1024px) 50vw, calc(33vw - 32px)";
 
 interface AnimatedGalleryItemProps {
   item: PhotoCollection;

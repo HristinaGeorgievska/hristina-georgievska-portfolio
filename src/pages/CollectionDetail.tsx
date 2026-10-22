@@ -13,7 +13,7 @@ import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
 
 const PAGE_SIZE = 20;
-const THUMBNAIL_SIZES = "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw";
+const THUMBNAIL_SIZES = "(max-width: 768px) calc(100vw - 32px), (max-width: 1024px) 50vw, calc(33vw - 32px)";
 
 /** Animated photo item within the collection detail grid */
 const PhotoItem = ({
@@ -202,7 +202,8 @@ const CollectionDetail = () => {
           name="description"
           content={collection.description || `View the ${collection.title} gallery. Makeup and hair styling by Prague-based artist Hristina Georgievska.`}
         />
-        <link rel="canonical" href={`https://hristinageorgievska.com/collection/${slug}`} />
+        <link rel="canonical" href={`https://www.hristinageorgievska.com/collection/${slug}`} />
+        <meta property="og:url" content={`https://www.hristinageorgievska.com/collection/${slug}`} />
       </Helmet>
       <Header />
 
