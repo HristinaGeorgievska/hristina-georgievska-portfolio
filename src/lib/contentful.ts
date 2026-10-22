@@ -385,6 +385,7 @@ export async function getVideos(): Promise<Video[]> {
     const rawEmbed = fields.embedUrl ? String(fields.embedUrl) : "";
     const videoFileUrl = getAssetUrl(fields.videoFile);
     const rawDirector = fields.director ?? fields.Director;
+    const cleanDirector = rawDirector ? String(rawDirector).trim() : undefined;
 
     return {
       id: entry.sys.id,
@@ -395,7 +396,7 @@ export async function getVideos(): Promise<Video[]> {
       description: fields.description
         ? String(fields.description)
         : undefined,
-      director: rawDirector ? String(rawDirector) : undefined,
+      director: cleanDirector && cleanDirector.length > 0 ? cleanDirector : undefined,
     };
   });
 }

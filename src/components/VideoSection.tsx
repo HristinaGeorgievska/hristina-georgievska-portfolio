@@ -140,7 +140,7 @@ const VideoModal = ({
           <h3 className="text-xl md:text-2xl font-bold mb-1 text-white">{video.title}</h3>
           {video.director && (
             <p className="text-sm opacity-70 mb-2">
-              {/^dir(ector)?:/i.test(video.director) ? video.director : `Director: ${video.director}`}
+              Director: {video.director.replace(/^director:\s*/i, "").trim()}
             </p>
           )}
           {video.description && (
@@ -248,7 +248,7 @@ const VideoCard = ({
         </p>
         {video.director && (
           <p className="text-xs text-muted-foreground mt-[4px] font-normal tracking-normal">
-            {/^dir(ector)?:/i.test(video.director) ? video.director : `Director: ${video.director}`}
+            Director: {video.director.replace(/^director:\s*/i, "").trim()}
           </p>
         )}
       </div>
