@@ -20,15 +20,18 @@ const PhotoItem = ({
   src,
   index,
   altText,
+  contentType,
   onClick,
 }: {
   src: string;
   index: number;
   altText: string;
+  contentType?: string;
   onClick: () => void;
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const isAboveTheFold = index < 6;
+  const isEager = index < 3;
   const isPriority = index === 0;
 
   const { ref, isVisible } = useIntersectionObserver({
@@ -68,6 +71,7 @@ const PhotoItem = ({
         )}
         <ContentfulPicture
           src={src}
+          contentType={contentType}
           preset="thumbnail"
           sizes={THUMBNAIL_SIZES}
           alt={altText}
@@ -79,7 +83,7 @@ const PhotoItem = ({
               ? "opacity-100 transition-transform duration-500"
               : `transition-all duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`
           }`}
-          loading={isPriority ? "eager" : "lazy"}
+          loading={isEager ? "eager" : "lazy"}
           fetchPriority={isPriority ? "high" : undefined}
           onLoad={isAboveTheFold ? undefined : () => setIsLoaded(true)}
         />
@@ -240,12 +244,13 @@ const CollectionDetail = () => {
 
       {/* Photos grid — renders in batches via infinite scroll */}
       <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 pb-16">
-        {visiblePhotos.map((photoUrl, index) => {
+        {visiblePhotos.map((photo, index) => {
           const altText = `${collection.title || "Portfolio"} - ${collection.client || "Gallery"} Makeup and Hair by Hristina Georgievska - Photo ${index + 1}`;
           return (
             <PhotoItem
-              key={photoUrl + index}
-              src={photoUrl}
+              key={photo.url + index}
+              src={photo.url}
+              contentType={photo.contentType}
               index={index}
               altText={altText}
               onClick={() => openLightbox(index)}
@@ -263,7 +268,10 @@ const CollectionDetail = () => {
       {/* Lightbox for viewing individual photos */}
       <Lightbox
         isOpen={lightboxOpen}
-        imageUrl={photos[currentImageIndex] || ""}
+        imageUrl={photos[currentImageIndex]?.url ?? ""}
+        imageWidth={photos[currentImageIndex]?.width}
+        imageHeight={photos[currentImageIndex]?.height}
+        contentType={photos[currentImageIndex]?.contentType}
         imageDetails={{
           client: collection.client,
           name: collection.title,

@@ -58,11 +58,36 @@ describe("ContentfulPicture", () => {
 
     const thumbSrcSet = thumb.querySelector("source")?.getAttribute("srcset") ?? "";
     const fullSrcSet = full.querySelector("source")?.getAttribute("srcset") ?? "";
+    expect(thumbSrcSet).toContain("w=400");
     expect(thumbSrcSet).toContain("w=640");
     expect(thumbSrcSet).not.toContain("w=2400");
     expect(fullSrcSet).toContain("w=2400");
     expect(full.querySelector("img")).toHaveAttribute("loading", "eager");
     expect(full.querySelector("img")).toHaveAttribute("fetchpriority", "high");
+  });
+
+  it("omits width/height when dimensions are unknown", () => {
+    const { container } = render(
+      <ContentfulPicture src={SRC} alt="Lightbox" sizes="90vw" preset="full" />
+    );
+    const img = container.querySelector("img");
+    expect(img).not.toHaveAttribute("width");
+    expect(img).not.toHaveAttribute("height");
+  });
+
+  it("uses PNG as the raster fallback for transparent assets", () => {
+    const { container } = render(
+      <ContentfulPicture
+        src="https://images.ctfassets.net/space/asset/logo.png"
+        alt="Logo"
+        sizes="33vw"
+        contentType="image/png"
+      />
+    );
+    const img = container.querySelector("img");
+    expect(img?.getAttribute("src")).toContain("fm=png");
+    expect(img?.getAttribute("srcset")).toContain("fm=png");
+    expect(img?.getAttribute("src")).not.toContain("fm=jpg");
   });
 
   it("falls back to a plain img for non-Contentful URLs", () => {

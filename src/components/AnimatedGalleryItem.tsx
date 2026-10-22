@@ -15,6 +15,7 @@ interface AnimatedGalleryItemProps {
 const AnimatedGalleryItem = ({ item, index }: AnimatedGalleryItemProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const isAboveTheFold = index < 6;
+  const isEager = index < 3;
   const isPriority = index === 0;
 
   const { ref, isVisible } = useIntersectionObserver({
@@ -64,7 +65,7 @@ const AnimatedGalleryItem = ({ item, index }: AnimatedGalleryItemProps) => {
                 ? "opacity-100 transition-transform duration-500"
                 : `transition-all duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`
             }`}
-            loading={isPriority ? "eager" : "lazy"}
+            loading={isEager ? "eager" : "lazy"}
             fetchPriority={isPriority ? "high" : undefined}
             onLoad={isAboveTheFold ? undefined : () => setIsLoaded(true)}
           />

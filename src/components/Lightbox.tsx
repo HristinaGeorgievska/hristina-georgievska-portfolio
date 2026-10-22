@@ -14,6 +14,9 @@ interface ImageDetails {
 interface LightboxProps {
   isOpen: boolean;
   imageUrl: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  contentType?: string;
   imageDetails?: ImageDetails;
   currentIndex: number;
   totalImages: number;
@@ -25,6 +28,9 @@ interface LightboxProps {
 const Lightbox = ({
   isOpen,
   imageUrl,
+  imageWidth,
+  imageHeight,
+  contentType,
   imageDetails,
   currentIndex,
   totalImages,
@@ -99,9 +105,11 @@ const Lightbox = ({
           preset="full"
           sizes={LIGHTBOX_SIZES}
           alt={hasDetails ? `${imageDetails?.name || "Portfolio"} - ${imageDetails?.client || "Gallery"} Makeup and Hair by Hristina Georgievska` : "Makeup and Hair Portfolio Image"}
-          width={1600}
-          height={2133}
-          className="max-h-[75vh] max-w-full rounded-lg object-contain shadow-2xl md:max-h-[80vh]"
+          width={imageWidth}
+          height={imageHeight}
+          contentType={contentType}
+          pictureClassName="flex max-h-[75vh] max-w-full items-center justify-center md:max-h-[80vh]"
+          className="h-auto w-auto max-h-[75vh] max-w-full rounded-lg object-contain shadow-2xl md:max-h-[80vh]"
           loading="eager"
           fetchPriority="high"
         />

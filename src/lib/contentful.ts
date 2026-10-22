@@ -27,14 +27,22 @@ export interface PhotoCollection {
   slug: string;
   coverUrl: string;
   /** Only populated when fetching a single collection (detail page). */
-  photos?: string[];
+  photos?: ContentfulImage[];
   category: GalleryCategory;
   client?: string;
   photographer?: string;
   description?: string;
 }
 
-export type ContentfulImageFormat = "avif" | "webp" | "jpg";
+export interface ContentfulImage {
+  url: string;
+  width?: number;
+  height?: number;
+  contentType?: string;
+}
+
+export type ContentfulImageFormat = "avif" | "webp" | "jpg" | "png";
+export type ContentfulFallbackFormat = "jpg" | "png";
 
 export interface ContentfulImageParams {
   fm: ContentfulImageFormat;
@@ -47,7 +55,7 @@ export const IMAGE_QUALITY = 75;
 export const JPEG_QUALITY = 80;
 
 export const CONTENTFUL_IMAGE_WIDTHS = [640, 1024, 1600, 2400] as const;
-export const THUMBNAIL_IMAGE_WIDTHS = [640, 1024, 1600] as const;
+export const THUMBNAIL_IMAGE_WIDTHS = [400, 640, 1024, 1600] as const;
 export const FULL_IMAGE_WIDTHS = [1024, 1600, 2400] as const;
 
 function parseContentfulAssetUrl(url: string): URL | undefined {
@@ -80,7 +88,7 @@ export function buildImageUrl(
   }
 
   const quality =
-    params.q ?? (params.fm === "jpg" ? JPEG_QUALITY : IMAGE_QUALITY);
+    params.q ?? (params.fm === "jpg" || params.fm === "png" ? JPEG_QUALITY : IMAGE_QUALITY);
 
   const transformed = new URL(parsed.pathname, parsed.origin);
   transformed.searchParams.set("fm", params.fm);
@@ -120,6 +128,18 @@ export function buildSrcSet(
  */
 export function buildLqipUrl(url?: string): string | undefined {
   return buildImageUrl(url, { fm: "webp", q: 20, w: 20 });
+}
+
+/** JPG fallback flattens alpha; keep PNG assets as PNG. */
+export function getFallbackImageFormat(
+  url: string | undefined,
+  contentType?: string
+): ContentfulFallbackFormat {
+  if (contentType === "image/png") return "png";
+  if (!url) return "jpg";
+  const parsed = parseContentfulAssetUrl(url);
+  const path = (parsed?.pathname ?? url).split("?")[0].toLowerCase();
+  return path.endsWith(".png") ? "png" : "jpg";
 }
 
 // --- Video ---
@@ -195,6 +215,12 @@ export function parseEmbedUrl(url: string): string | undefined {
 interface ContentfulAssetFile {
   url?: string;
   contentType?: string;
+  details?: {
+    image?: {
+      width?: number;
+      height?: number;
+    };
+  };
 }
 
 interface ContentfulAsset {
@@ -204,24 +230,33 @@ interface ContentfulAsset {
 }
 
 /**
- * Extract a protocol-normalized asset URL from a resolved Contentful asset.
- * Image transform params are applied at render time via `buildImageUrl`.
+ * Extract a protocol-normalized image from a resolved Contentful asset,
+ * including intrinsic dimensions when Contentful provides them.
  */
-function getAssetUrl(asset: unknown): string | undefined {
+function getAssetImage(asset: unknown): ContentfulImage | undefined {
   if (!asset || typeof asset !== "object") return undefined;
-  const url = (asset as ContentfulAsset).fields?.file?.url;
-  if (!url || typeof url !== "string") return undefined;
-  return url.startsWith("//") ? `https:${url}` : url;
+  const file = (asset as ContentfulAsset).fields?.file;
+  if (!file?.url || typeof file.url !== "string") return undefined;
+  const width = file.details?.image?.width;
+  const height = file.details?.image?.height;
+  return {
+    url: file.url.startsWith("//") ? `https:${file.url}` : file.url,
+    width: typeof width === "number" ? width : undefined,
+    height: typeof height === "number" ? height : undefined,
+    contentType:
+      typeof file.contentType === "string" ? file.contentType : undefined,
+  };
 }
 
-/**
- * Extract multiple asset URLs from resolved Contentful assets array
- */
-function getAssetUrls(assets: unknown): string[] {
+function getAssetUrl(asset: unknown): string | undefined {
+  return getAssetImage(asset)?.url;
+}
+
+function getAssetImages(assets: unknown): ContentfulImage[] {
   if (!assets || !Array.isArray(assets)) return [];
   return assets
-    .map((asset) => getAssetUrl(asset))
-    .filter((url): url is string => !!url);
+    .map((asset) => getAssetImage(asset))
+    .filter((image): image is ContentfulImage => !!image);
 }
 
 /**
@@ -320,7 +355,7 @@ export async function getCollectionBySlug(
     title: String(fields.title ?? ""),
     slug: String(fields.slug ?? ""),
     coverUrl,
-    photos: getAssetUrls(fields.photos),
+    photos: getAssetImages(fields.photos),
     category: String(fields.category ?? "fashion") as GalleryCategory,
     client: fields.client ? String(fields.client) : undefined,
     photographer: fields.photographer

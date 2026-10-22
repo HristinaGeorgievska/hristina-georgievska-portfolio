@@ -4,6 +4,7 @@ import {
   buildImageUrl,
   buildSrcSet,
   buildLqipUrl,
+  getFallbackImageFormat,
   CONTENTFUL_IMAGE_WIDTHS,
   THUMBNAIL_IMAGE_WIDTHS,
   FULL_IMAGE_WIDTHS,
@@ -94,9 +95,11 @@ describe("buildSrcSet", () => {
       widths: THUMBNAIL_IMAGE_WIDTHS,
     });
     const full = buildSrcSet(ASSET, { fm: "webp", widths: FULL_IMAGE_WIDTHS });
+    expect(thumbs).toContain("w=400 400w");
     expect(thumbs).toContain("w=640 640w");
     expect(thumbs).not.toContain("w=2400 2400w");
     expect(full).toContain("w=2400 2400w");
+    expect(full).not.toContain("w=400 400w");
     expect(full).not.toContain("w=640 640w");
   });
 
@@ -106,6 +109,25 @@ describe("buildSrcSet", () => {
     expect(
       buildSrcSet("https://external-site.com/image.jpg", { fm: "jpg" })
     ).toBeUndefined();
+  });
+});
+
+describe("getFallbackImageFormat", () => {
+  it("keeps PNG assets as PNG so alpha is not flattened to JPEG", () => {
+    expect(
+      getFallbackImageFormat(
+        "https://images.ctfassets.net/space/asset/logo.png",
+        "image/png"
+      )
+    ).toBe("png");
+    expect(
+      getFallbackImageFormat("https://images.ctfassets.net/space/asset/logo.png")
+    ).toBe("png");
+  });
+
+  it("uses JPEG for photographic assets", () => {
+    expect(getFallbackImageFormat(ASSET, "image/jpeg")).toBe("jpg");
+    expect(getFallbackImageFormat(ASSET)).toBe("jpg");
   });
 });
 
