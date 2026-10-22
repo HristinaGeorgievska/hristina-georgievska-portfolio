@@ -4,6 +4,9 @@ import ReactMarkdown from "react-markdown";
 import { useVideos } from "@/hooks/use-contentful";
 import { Skeleton } from "@/components/ui/skeleton";
 import { buildLqipUrl } from "@/lib/contentful";
+import { ContentfulPicture } from "@/components/ContentfulPicture";
+
+const VIDEO_THUMB_SIZES = "(max-width: 768px) 100vw, 50vw";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -172,7 +175,7 @@ const VideoCard = ({
   onPlay: (index: number) => void;
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
-  const isAboveTheFold = index < 2;
+  const isPriority = index === 0;
   const lqipUrl = buildLqipUrl(video.thumbnailUrl);
 
   return (
@@ -197,18 +200,19 @@ const VideoCard = ({
               />
             )}
 
-            {/* Poster image */}
-            <img
+            <ContentfulPicture
               src={video.thumbnailUrl}
+              preset="thumbnail"
+              sizes={VIDEO_THUMB_SIZES}
               alt={video.title}
               width={800}
               height={450}
-              className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-90 ${
+              pictureClassName="absolute inset-0 h-full w-full"
+              className={`absolute inset-0 h-full w-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-90 ${
                 isLoaded ? "opacity-100" : "opacity-0"
               }`}
-              loading={isAboveTheFold ? "eager" : "lazy"}
-              decoding="async"
-              fetchPriority={isAboveTheFold ? "high" : undefined}
+              loading={isPriority ? "eager" : "lazy"}
+              fetchPriority={isPriority ? "high" : undefined}
               onLoad={() => setIsLoaded(true)}
             />
           </>

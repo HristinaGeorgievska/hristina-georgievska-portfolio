@@ -1,5 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { parseEmbedUrl, buildSrcSet, buildLqipUrl } from "./contentful";
+import {
+  parseEmbedUrl,
+  buildImageUrl,
+  buildSrcSet,
+  buildLqipUrl,
+  getFallbackImageFormat,
+  CONTENTFUL_IMAGE_WIDTHS,
+  THUMBNAIL_IMAGE_WIDTHS,
+  FULL_IMAGE_WIDTHS,
+} from "./contentful";
+
+const ASSET =
+  "https://images.ctfassets.net/space/asset/test.jpg?fm=webp&q=80&w=800";
 
 describe("parseEmbedUrl", () => {
   it("normalizes YouTube and Vimeo URLs to allowed embed origins", () => {
@@ -17,29 +29,112 @@ describe("parseEmbedUrl", () => {
   });
 });
 
-describe("buildSrcSet", () => {
-  it("generates responsive srcset for Contentful asset URLs", () => {
-    const src = "https://images.ctfassets.net/space/asset/test.jpg?fm=webp&q=80&w=800";
-    const srcSet = buildSrcSet(src);
-    expect(srcSet).toContain("w=400 400w");
-    expect(srcSet).toContain("w=800 800w");
-    expect(srcSet).toContain("w=1200 1200w");
-    expect(srcSet).toContain("w=1920 1920w");
+describe("buildImageUrl", () => {
+  it("builds AVIF, WebP, and JPG URLs with quality and width", () => {
+    expect(buildImageUrl(ASSET, { fm: "avif", q: 75, w: 1024 })).toBe(
+      "https://images.ctfassets.net/space/asset/test.jpg?fm=avif&q=75&w=1024"
+    );
+    expect(buildImageUrl(ASSET, { fm: "webp", q: 75, w: 640 })).toBe(
+      "https://images.ctfassets.net/space/asset/test.jpg?fm=webp&q=75&w=640"
+    );
+    expect(buildImageUrl(ASSET, { fm: "jpg", q: 80, w: 1600 })).toBe(
+      "https://images.ctfassets.net/space/asset/test.jpg?fm=jpg&q=80&w=1600"
+    );
+  });
+
+  it("defaults quality to 75 for AVIF/WebP and 80 for JPG", () => {
+    expect(buildImageUrl(ASSET, { fm: "avif", w: 640 })).toContain("q=75");
+    expect(buildImageUrl(ASSET, { fm: "webp", w: 640 })).toContain("q=75");
+    expect(buildImageUrl(ASSET, { fm: "jpg", w: 640 })).toContain("q=80");
+  });
+
+  it("normalizes protocol-relative URLs and Images API host", () => {
+    expect(
+      buildImageUrl("//images.ctfassets.net/space/asset/test.jpg", {
+        fm: "webp",
+        w: 640,
+      })
+    ).toBe(
+      "https://images.ctfassets.net/space/asset/test.jpg?fm=webp&q=75&w=640"
+    );
+    expect(
+      buildImageUrl("https://assets.ctfassets.net/space/asset/test.jpg", {
+        fm: "avif",
+        w: 1024,
+      })
+    ).toBe(
+      "https://images.ctfassets.net/space/asset/test.jpg?fm=avif&q=75&w=1024"
+    );
   });
 
   it("returns undefined for empty, invalid, or non-Contentful URLs", () => {
-    expect(buildSrcSet("")).toBeUndefined();
-    expect(buildSrcSet(undefined)).toBeUndefined();
-    expect(buildSrcSet("https://external-site.com/image.jpg")).toBeUndefined();
+    expect(buildImageUrl("", { fm: "jpg" })).toBeUndefined();
+    expect(buildImageUrl(undefined, { fm: "jpg" })).toBeUndefined();
+    expect(
+      buildImageUrl("https://external-site.com/image.jpg", { fm: "jpg" })
+    ).toBeUndefined();
+  });
+});
+
+describe("buildSrcSet", () => {
+  it("generates responsive srcset for a requested format and widths", () => {
+    const srcSet = buildSrcSet(ASSET, {
+      fm: "avif",
+      widths: CONTENTFUL_IMAGE_WIDTHS,
+    });
+    expect(srcSet).toContain("fm=avif&q=75&w=640 640w");
+    expect(srcSet).toContain("fm=avif&q=75&w=1024 1024w");
+    expect(srcSet).toContain("fm=avif&q=75&w=1600 1600w");
+    expect(srcSet).toContain("fm=avif&q=75&w=2400 2400w");
+    expect(srcSet).not.toContain("w=800 800w");
+  });
+
+  it("uses smaller widths for thumbnails and larger widths for full view", () => {
+    const thumbs = buildSrcSet(ASSET, {
+      fm: "webp",
+      widths: THUMBNAIL_IMAGE_WIDTHS,
+    });
+    const full = buildSrcSet(ASSET, { fm: "webp", widths: FULL_IMAGE_WIDTHS });
+    expect(thumbs).toContain("w=400 400w");
+    expect(thumbs).toContain("w=640 640w");
+    expect(thumbs).not.toContain("w=2400 2400w");
+    expect(full).toContain("w=2400 2400w");
+    expect(full).not.toContain("w=400 400w");
+    expect(full).not.toContain("w=640 640w");
+  });
+
+  it("returns undefined for empty, invalid, or non-Contentful URLs", () => {
+    expect(buildSrcSet("", { fm: "jpg" })).toBeUndefined();
+    expect(buildSrcSet(undefined, { fm: "jpg" })).toBeUndefined();
+    expect(
+      buildSrcSet("https://external-site.com/image.jpg", { fm: "jpg" })
+    ).toBeUndefined();
+  });
+});
+
+describe("getFallbackImageFormat", () => {
+  it("keeps PNG assets as PNG so alpha is not flattened to JPEG", () => {
+    expect(
+      getFallbackImageFormat(
+        "https://images.ctfassets.net/space/asset/logo.png",
+        "image/png"
+      )
+    ).toBe("png");
+    expect(
+      getFallbackImageFormat("https://images.ctfassets.net/space/asset/logo.png")
+    ).toBe("png");
+  });
+
+  it("uses JPEG for photographic assets", () => {
+    expect(getFallbackImageFormat(ASSET, "image/jpeg")).toBe("jpg");
+    expect(getFallbackImageFormat(ASSET)).toBe("jpg");
   });
 });
 
 describe("buildLqipUrl", () => {
-  it("generates 20px low quality placeholder for Contentful asset URLs", () => {
-    const src = "https://images.ctfassets.net/space/asset/test.jpg?fm=webp&q=80&w=800";
-    const lqip = buildLqipUrl(src);
-    expect(lqip).toBe(
-      "https://images.ctfassets.net/space/asset/test.jpg?fm=webp&q=80&w=20&q=20&fm=webp"
+  it("generates a clean 20px low-quality placeholder", () => {
+    expect(buildLqipUrl(ASSET)).toBe(
+      "https://images.ctfassets.net/space/asset/test.jpg?fm=webp&q=20&w=20"
     );
   });
 
@@ -49,4 +144,3 @@ describe("buildLqipUrl", () => {
     expect(buildLqipUrl("https://example.com/photo.jpg")).toBeUndefined();
   });
 });
-

@@ -2,7 +2,8 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useCollection } from "@/hooks/use-contentful";
-import { buildSrcSet, buildLqipUrl } from "@/lib/contentful";
+import { buildLqipUrl } from "@/lib/contentful";
+import { ContentfulPicture } from "@/components/ContentfulPicture";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import Lightbox from "@/components/Lightbox";
@@ -12,21 +13,26 @@ import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
 
 const PAGE_SIZE = 20;
+const THUMBNAIL_SIZES = "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw";
 
 /** Animated photo item within the collection detail grid */
 const PhotoItem = ({
   src,
   index,
   altText,
+  contentType,
   onClick,
 }: {
   src: string;
   index: number;
   altText: string;
+  contentType?: string;
   onClick: () => void;
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const isAboveTheFold = index < 6;
+  const isEager = index < 3;
+  const isPriority = index === 0;
 
   const { ref, isVisible } = useIntersectionObserver({
     threshold: 0.1,
@@ -63,21 +69,22 @@ const PhotoItem = ({
             decoding="async"
           />
         )}
-        <img
+        <ContentfulPicture
           src={src}
-          srcSet={buildSrcSet(src)}
-          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          contentType={contentType}
+          preset="thumbnail"
+          sizes={THUMBNAIL_SIZES}
           alt={altText}
           width={800}
           height={1067}
-          className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 group-hover:brightness-90 ${
+          pictureClassName="absolute inset-0 h-full w-full"
+          className={`absolute inset-0 h-full w-full object-cover group-hover:scale-105 group-hover:brightness-90 ${
             isAboveTheFold
               ? "opacity-100 transition-transform duration-500"
               : `transition-all duration-300 ${isLoaded ? "opacity-100" : "opacity-0"}`
           }`}
-          loading={isAboveTheFold ? "eager" : "lazy"}
-          decoding="async"
-          fetchPriority={isAboveTheFold ? "high" : undefined}
+          loading={isEager ? "eager" : "lazy"}
+          fetchPriority={isPriority ? "high" : undefined}
           onLoad={isAboveTheFold ? undefined : () => setIsLoaded(true)}
         />
       </div>
@@ -237,12 +244,13 @@ const CollectionDetail = () => {
 
       {/* Photos grid — renders in batches via infinite scroll */}
       <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 pb-16">
-        {visiblePhotos.map((photoUrl, index) => {
+        {visiblePhotos.map((photo, index) => {
           const altText = `${collection.title || "Portfolio"} - ${collection.client || "Gallery"} Makeup and Hair by Hristina Georgievska - Photo ${index + 1}`;
           return (
             <PhotoItem
-              key={photoUrl + index}
-              src={photoUrl}
+              key={photo.url + index}
+              src={photo.url}
+              contentType={photo.contentType}
               index={index}
               altText={altText}
               onClick={() => openLightbox(index)}
@@ -260,7 +268,10 @@ const CollectionDetail = () => {
       {/* Lightbox for viewing individual photos */}
       <Lightbox
         isOpen={lightboxOpen}
-        imageUrl={photos[currentImageIndex] || ""}
+        imageUrl={photos[currentImageIndex]?.url ?? ""}
+        imageWidth={photos[currentImageIndex]?.width}
+        imageHeight={photos[currentImageIndex]?.height}
+        contentType={photos[currentImageIndex]?.contentType}
         imageDetails={{
           client: collection.client,
           name: collection.title,

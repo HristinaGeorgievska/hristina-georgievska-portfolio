@@ -27,43 +27,119 @@ export interface PhotoCollection {
   slug: string;
   coverUrl: string;
   /** Only populated when fetching a single collection (detail page). */
-  photos?: string[];
+  photos?: ContentfulImage[];
   category: GalleryCategory;
   client?: string;
   photographer?: string;
   description?: string;
 }
 
-/**
- * Generate a srcset string for a Contentful image URL.
- * Strips any existing `w=` parameter and emits 400w, 800w, 1200w, 1920w variants.
- */
-export function buildSrcSet(url?: string): string | undefined {
-  if (!url || typeof url !== "string" || !url.includes("ctfassets.net")) {
+export interface ContentfulImage {
+  url: string;
+  width?: number;
+  height?: number;
+  contentType?: string;
+}
+
+export type ContentfulImageFormat = "avif" | "webp" | "jpg" | "png";
+export type ContentfulFallbackFormat = "jpg" | "png";
+
+export interface ContentfulImageParams {
+  fm: ContentfulImageFormat;
+  q?: number;
+  w?: number;
+}
+
+/** Default Images API quality (75–80). JPEG uses the top of the range. */
+export const IMAGE_QUALITY = 75;
+export const JPEG_QUALITY = 80;
+
+export const CONTENTFUL_IMAGE_WIDTHS = [640, 1024, 1600, 2400] as const;
+export const THUMBNAIL_IMAGE_WIDTHS = [400, 640, 1024, 1600] as const;
+export const FULL_IMAGE_WIDTHS = [1024, 1600, 2400] as const;
+
+function parseContentfulAssetUrl(url: string): URL | undefined {
+  try {
+    const absolute = url.startsWith("//") ? `https:${url}` : url;
+    const parsed = new URL(absolute);
+    if (!parsed.hostname.endsWith("ctfassets.net")) {
+      return undefined;
+    }
+    return parsed;
+  } catch {
     return undefined;
   }
-  const base = url.replace(/([?&])w=\d+(&|$)/, (_m, pre, post) =>
-    post ? pre : ""
-  );
-  const sep = base.includes("?") ? "&" : "?";
-  return [400, 800, 1200, 1920]
-    .map((w) => `${base}${sep}w=${w} ${w}w`)
-    .join(", ");
+}
+
+/**
+ * Build a Contentful Images API URL from a raw asset URL.
+ * Sets `fm` (avif/webp/jpg), `q` (75–80), and optional `w`.
+ */
+export function buildImageUrl(
+  url: string | undefined,
+  params: ContentfulImageParams
+): string | undefined {
+  if (!url || typeof url !== "string") return undefined;
+  const parsed = parseContentfulAssetUrl(url);
+  if (!parsed) return undefined;
+
+  if (parsed.hostname === "assets.ctfassets.net") {
+    parsed.hostname = "images.ctfassets.net";
+  }
+
+  const quality =
+    params.q ?? (params.fm === "jpg" || params.fm === "png" ? JPEG_QUALITY : IMAGE_QUALITY);
+
+  const transformed = new URL(parsed.pathname, parsed.origin);
+  transformed.searchParams.set("fm", params.fm);
+  transformed.searchParams.set("q", String(quality));
+  if (params.w !== undefined) {
+    transformed.searchParams.set("w", String(params.w));
+  }
+  return transformed.toString();
+}
+
+/**
+ * Generate a srcset string for a Contentful image URL in a single format.
+ */
+export function buildSrcSet(
+  url: string | undefined,
+  options: {
+    fm: ContentfulImageFormat;
+    q?: number;
+    widths?: readonly number[];
+  }
+): string | undefined {
+  const widths = options.widths ?? CONTENTFUL_IMAGE_WIDTHS;
+  const entries = widths.map((width) => {
+    const built = buildImageUrl(url, {
+      fm: options.fm,
+      q: options.q,
+      w: width,
+    });
+    return built ? `${built} ${width}w` : undefined;
+  });
+  if (entries.some((entry) => !entry)) return undefined;
+  return entries.join(", ");
 }
 
 /**
  * Generate a tiny blurred placeholder (LQIP) URL for a Contentful image URL.
- * Strips existing dimensions and requests a 20px wide WebP image at low quality.
  */
 export function buildLqipUrl(url?: string): string | undefined {
-  if (!url || typeof url !== "string" || !url.includes("ctfassets.net")) {
-    return undefined;
-  }
-  const base = url.replace(/([?&])w=\d+(&|$)/, (_m, pre, post) =>
-    post ? pre : ""
-  );
-  const sep = base.includes("?") ? "&" : "?";
-  return `${base}${sep}w=20&q=20&fm=webp`;
+  return buildImageUrl(url, { fm: "webp", q: 20, w: 20 });
+}
+
+/** JPG fallback flattens alpha; keep PNG assets as PNG. */
+export function getFallbackImageFormat(
+  url: string | undefined,
+  contentType?: string
+): ContentfulFallbackFormat {
+  if (contentType === "image/png") return "png";
+  if (!url) return "jpg";
+  const parsed = parseContentfulAssetUrl(url);
+  const path = (parsed?.pathname ?? url).split("?")[0].toLowerCase();
+  return path.endsWith(".png") ? "png" : "jpg";
 }
 
 // --- Video ---
@@ -136,33 +212,51 @@ export function parseEmbedUrl(url: string): string | undefined {
   return undefined;
 }
 
-/**
- * Extract asset URL from a resolved Contentful asset
- */
-function getAssetUrl(asset: unknown, width: number = 800): string | undefined {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const a = asset as any;
-  if (!a?.fields?.file?.url) return undefined;
-  const url = a.fields.file.url as string;
-  let finalUrl = url.startsWith("//") ? `https:${url}` : url;
+interface ContentfulAssetFile {
+  url?: string;
+  contentType?: string;
+  details?: {
+    image?: {
+      width?: number;
+      height?: number;
+    };
+  };
+}
 
-  const contentType = a.fields.file.contentType;
-  const isImage = contentType?.startsWith("image/") && contentType !== "image/svg+xml";
-  if (isImage || finalUrl.match(/\.(jpg|jpeg|png|webp|avif)$/i)) {
-    finalUrl += `?fm=webp&q=80&w=${width}`;
-  }
-
-  return finalUrl;
+interface ContentfulAsset {
+  fields?: {
+    file?: ContentfulAssetFile;
+  };
 }
 
 /**
- * Extract multiple asset URLs from resolved Contentful assets array
+ * Extract a protocol-normalized image from a resolved Contentful asset,
+ * including intrinsic dimensions when Contentful provides them.
  */
-function getAssetUrls(assets: unknown, width: number = 1920): string[] {
+function getAssetImage(asset: unknown): ContentfulImage | undefined {
+  if (!asset || typeof asset !== "object") return undefined;
+  const file = (asset as ContentfulAsset).fields?.file;
+  if (!file?.url || typeof file.url !== "string") return undefined;
+  const width = file.details?.image?.width;
+  const height = file.details?.image?.height;
+  return {
+    url: file.url.startsWith("//") ? `https:${file.url}` : file.url,
+    width: typeof width === "number" ? width : undefined,
+    height: typeof height === "number" ? height : undefined,
+    contentType:
+      typeof file.contentType === "string" ? file.contentType : undefined,
+  };
+}
+
+function getAssetUrl(asset: unknown): string | undefined {
+  return getAssetImage(asset)?.url;
+}
+
+function getAssetImages(assets: unknown): ContentfulImage[] {
   if (!assets || !Array.isArray(assets)) return [];
   return assets
-    .map((asset) => getAssetUrl(asset, width))
-    .filter((url): url is string => !!url);
+    .map((asset) => getAssetImage(asset))
+    .filter((image): image is ContentfulImage => !!image);
 }
 
 /**
@@ -261,7 +355,7 @@ export async function getCollectionBySlug(
     title: String(fields.title ?? ""),
     slug: String(fields.slug ?? ""),
     coverUrl,
-    photos: getAssetUrls(fields.photos),
+    photos: getAssetImages(fields.photos),
     category: String(fields.category ?? "fashion") as GalleryCategory,
     client: fields.client ? String(fields.client) : undefined,
     photographer: fields.photographer
