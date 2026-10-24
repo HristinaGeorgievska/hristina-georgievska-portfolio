@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import type { PhotoCollection } from "@/lib/contentful";
 import { buildLqipUrl } from "@/lib/contentful";
 import { ContentfulPicture } from "@/components/ContentfulPicture";
@@ -17,26 +16,10 @@ const AnimatedGalleryItem = ({ item, index }: AnimatedGalleryItemProps) => {
   const isAboveTheFold = index < 6;
   const isEager = index < 3;
   const isPriority = index === 0;
-
-  const { ref, isVisible } = useIntersectionObserver({
-    threshold: 0.1,
-    rootMargin: "50px",
-  });
-
-  const showContent = isAboveTheFold || isVisible;
   const lqipUrl = buildLqipUrl(item.coverUrl);
 
   return (
-    <div
-      ref={isAboveTheFold ? undefined : ref}
-      className={`group relative overflow-hidden rounded-xl shadow-md transition-all duration-500 ease-out ${
-        showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-      }`}
-      // Only delay below-the-fold reveals
-      style={{
-        transitionDelay: isAboveTheFold ? "0ms" : `${Math.min(index % 6, 5) * 75}ms`,
-      }}
-    >
+    <div className="group relative overflow-hidden rounded-xl shadow-md">
       <Link to={`/collection/${item.slug}`} className="block">
         <div className="relative w-full aspect-[3/4] overflow-hidden bg-neutral-200 dark:bg-neutral-800">
           {/* Below-the-fold LQIP blurred background placeholder */}

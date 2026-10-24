@@ -5,7 +5,6 @@ import { useCollection } from "@/hooks/use-contentful";
 import { buildLqipUrl } from "@/lib/contentful";
 import { ContentfulPicture } from "@/components/ContentfulPicture";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import Lightbox from "@/components/Lightbox";
 import Header from "@/components/Header";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -30,10 +29,9 @@ interface MediaVideo {
 
 type MediaItem = MediaPhoto | MediaVideo;
 
-/** Animated video item within the collection detail grid */
+/** Video item within the collection detail grid */
 const VideoItem = ({
   src,
-  index,
   altText,
   onClick,
 }: {
@@ -44,13 +42,6 @@ const VideoItem = ({
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const isAboveTheFold = index < 6;
-  const { ref, isVisible } = useIntersectionObserver({
-    threshold: 0.1,
-    rootMargin: "50px",
-  });
-
-  const showContent = isAboveTheFold || isVisible;
 
   // Append #t=0.001 to force browser to decode the first video frame as poster
   const videoSource = src.includes("#t=") ? src : `${src}#t=0.001`;
@@ -72,15 +63,7 @@ const VideoItem = ({
 
   return (
     <div
-      ref={isAboveTheFold ? undefined : ref}
-      className={`cursor-pointer group relative overflow-hidden rounded-xl shadow-md transition-all duration-500 ease-out bg-neutral-900 ${
-        showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-      }`}
-      style={{
-        transitionDelay: isAboveTheFold
-          ? "0ms"
-          : `${(index % PAGE_SIZE % 6) * 75}ms`,
-      }}
+      className="cursor-pointer group relative overflow-hidden rounded-xl shadow-md bg-neutral-900"
       onClick={onClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -122,7 +105,7 @@ const VideoItem = ({
   );
 };
 
-/** Animated photo item within the collection detail grid */
+/** Photo item within the collection detail grid */
 const PhotoItem = ({
   src,
   index,
@@ -140,27 +123,11 @@ const PhotoItem = ({
   const isAboveTheFold = index < 6;
   const isEager = index < 3;
   const isPriority = index === 0;
-
-  const { ref, isVisible } = useIntersectionObserver({
-    threshold: 0.1,
-    rootMargin: "50px",
-  });
-
-  const showContent = isAboveTheFold || isVisible;
   const lqipUrl = buildLqipUrl(src);
 
   return (
     <div
-      ref={isAboveTheFold ? undefined : ref}
-      className={`cursor-pointer group relative overflow-hidden rounded-xl shadow-md transition-all duration-500 ease-out ${
-        showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-      }`}
-      // Stagger per-batch so each new batch animates within 1.5 s
-      style={{
-        transitionDelay: isAboveTheFold
-          ? "0ms"
-          : `${(index % PAGE_SIZE % 6) * 75}ms`,
-      }}
+      className="cursor-pointer group relative overflow-hidden rounded-xl shadow-md"
       onClick={onClick}
     >
       <div className="relative w-full aspect-[3/4] overflow-hidden bg-neutral-200 dark:bg-neutral-800">
