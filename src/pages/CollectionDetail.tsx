@@ -43,6 +43,7 @@ const VideoItem = ({
   onClick: () => void;
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const isAboveTheFold = index < 6;
   const { ref, isVisible } = useIntersectionObserver({
     threshold: 0.1,
@@ -50,6 +51,24 @@ const VideoItem = ({
   });
 
   const showContent = isAboveTheFold || isVisible;
+
+  // Append #t=0.001 to force browser to decode the first video frame as poster
+  const videoSource = src.includes("#t=") ? src : `${src}#t=0.001`;
+
+  const handleMouseEnter = () => {
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {
+        // Ignore autoplay rejection if blocked
+      });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  };
 
   return (
     <div
@@ -63,6 +82,8 @@ const VideoItem = ({
           : `${(index % PAGE_SIZE % 6) * 75}ms`,
       }}
       onClick={onClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       role="button"
       tabIndex={0}
       aria-label={`Play video: ${altText}`}
@@ -78,10 +99,13 @@ const VideoItem = ({
           <Skeleton className="w-full h-full absolute inset-0 z-10" />
         )}
         <video
-          src={src}
+          ref={videoRef}
+          src={videoSource}
           preload="metadata"
           muted
+          loop
           playsInline
+          onLoadedMetadata={() => setIsLoaded(true)}
           onLoadedData={() => setIsLoaded(true)}
           className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-90 ${
             isLoaded ? "opacity-100" : "opacity-0"
