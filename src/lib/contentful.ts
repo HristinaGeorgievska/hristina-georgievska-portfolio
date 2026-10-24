@@ -12,6 +12,7 @@ interface PhotoCollectionSkeleton {
     slug: EntryFieldTypes.Text;
     coverImage: EntryFieldTypes.AssetLink;
     photos: EntryFieldTypes.Array<EntryFieldTypes.AssetLink>;
+    videoFile?: EntryFieldTypes.AssetLink;
     category: EntryFieldTypes.Text;
     client: EntryFieldTypes.Text;
     photographer: EntryFieldTypes.Text;
@@ -28,6 +29,8 @@ export interface PhotoCollection {
   coverUrl: string;
   /** Only populated when fetching a single collection (detail page). */
   photos?: ContentfulImage[];
+  /** Optional video file URL if the collection includes a video */
+  videoUrl?: string;
   category: GalleryCategory;
   client?: string;
   photographer?: string;
@@ -358,6 +361,7 @@ export async function getCollectionBySlug(
     slug: String(fields.slug ?? ""),
     coverUrl,
     photos: getAssetImages(fields.photos),
+    videoUrl: getAssetUrl(fields.videoFile),
     category: String(fields.category ?? "fashion") as GalleryCategory,
     client: fields.client ? String(fields.client) : undefined,
     photographer: fields.photographer

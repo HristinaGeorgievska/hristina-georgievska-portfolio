@@ -14,6 +14,7 @@ interface ImageDetails {
 interface LightboxProps {
   isOpen: boolean;
   imageUrl: string;
+  isVideo?: boolean;
   imageWidth?: number;
   imageHeight?: number;
   contentType?: string;
@@ -28,6 +29,7 @@ interface LightboxProps {
 const Lightbox = ({
   isOpen,
   imageUrl,
+  isVideo,
   imageWidth,
   imageHeight,
   contentType,
@@ -100,19 +102,29 @@ const Lightbox = ({
         className="flex flex-col items-center max-w-[90vw] max-h-[90vh] animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        <ContentfulPicture
-          src={imageUrl}
-          preset="full"
-          sizes={LIGHTBOX_SIZES}
-          alt={hasDetails ? `${imageDetails?.name || "Portfolio"} - ${imageDetails?.client || "Gallery"} Makeup and Hair by Hristina Georgievska` : "Makeup and Hair Portfolio Image"}
-          width={imageWidth}
-          height={imageHeight}
-          contentType={contentType}
-          pictureClassName="flex max-h-[75vh] max-w-full items-center justify-center md:max-h-[80vh]"
-          className="h-auto w-auto max-h-[75vh] max-w-full rounded-lg object-contain shadow-2xl md:max-h-[80vh]"
-          loading="eager"
-          fetchPriority="high"
-        />
+        {isVideo ? (
+          <video
+            src={imageUrl}
+            controls
+            autoPlay
+            playsInline
+            className="max-w-full max-h-[75vh] md:max-h-[80vh] object-contain rounded-lg shadow-2xl bg-black"
+          />
+        ) : (
+          <ContentfulPicture
+            src={imageUrl}
+            preset="full"
+            sizes={LIGHTBOX_SIZES}
+            alt={hasDetails ? `${imageDetails?.name || "Portfolio"} - ${imageDetails?.client || "Gallery"} Makeup and Hair by Hristina Georgievska` : "Makeup and Hair Portfolio Image"}
+            width={imageWidth}
+            height={imageHeight}
+            contentType={contentType}
+            pictureClassName="flex max-h-[75vh] max-w-full items-center justify-center md:max-h-[80vh]"
+            className="h-auto w-auto max-h-[75vh] max-w-full rounded-lg object-contain shadow-2xl md:max-h-[80vh]"
+            loading="eager"
+            fetchPriority="high"
+          />
+        )}
 
         {/* Project details overlay */}
         {hasDetails && (

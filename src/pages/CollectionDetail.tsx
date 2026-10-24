@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Play } from "lucide-react";
 import { useCollection } from "@/hooks/use-contentful";
 import { buildLqipUrl } from "@/lib/contentful";
 import { ContentfulPicture } from "@/components/ContentfulPicture";
@@ -14,6 +14,89 @@ import { Helmet } from "react-helmet-async";
 
 const PAGE_SIZE = 20;
 const THUMBNAIL_SIZES = "(max-width: 768px) calc(100vw - 32px), (max-width: 1024px) 50vw, calc(33vw - 32px)";
+
+interface MediaPhoto {
+  type: "photo";
+  url: string;
+  width?: number;
+  height?: number;
+  contentType?: string;
+}
+
+interface MediaVideo {
+  type: "video";
+  url: string;
+}
+
+type MediaItem = MediaPhoto | MediaVideo;
+
+/** Animated video item within the collection detail grid */
+const VideoItem = ({
+  src,
+  index,
+  altText,
+  onClick,
+}: {
+  src: string;
+  index: number;
+  altText: string;
+  onClick: () => void;
+}) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const isAboveTheFold = index < 6;
+  const { ref, isVisible } = useIntersectionObserver({
+    threshold: 0.1,
+    rootMargin: "50px",
+  });
+
+  const showContent = isAboveTheFold || isVisible;
+
+  return (
+    <div
+      ref={isAboveTheFold ? undefined : ref}
+      className={`cursor-pointer group relative overflow-hidden rounded-xl shadow-md transition-all duration-500 ease-out bg-neutral-900 ${
+        showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+      }`}
+      style={{
+        transitionDelay: isAboveTheFold
+          ? "0ms"
+          : `${(index % PAGE_SIZE % 6) * 75}ms`,
+      }}
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      aria-label={`Play video: ${altText}`}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+    >
+      <div className="relative w-full aspect-[3/4] overflow-hidden bg-neutral-950 flex items-center justify-center">
+        {!isLoaded && (
+          <Skeleton className="w-full h-full absolute inset-0 z-10" />
+        )}
+        <video
+          src={src}
+          preload="metadata"
+          muted
+          playsInline
+          onLoadedData={() => setIsLoaded(true)}
+          className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-90 ${
+            isLoaded ? "opacity-100" : "opacity-0"
+          }`}
+        />
+        {/* Play button overlay */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+          <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white transition-all duration-300 group-hover:scale-110 group-hover:bg-black/80 shadow-lg">
+            <Play size={24} className="fill-white translate-x-0.5" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 /** Animated photo item within the collection detail grid */
 const PhotoItem = ({
@@ -121,16 +204,33 @@ const CollectionDetail = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Infinite scroll: number of photos currently rendered
+  // Combine photos and optional video (appended at the end)
+  const mediaItems = useMemo<MediaItem[]>(() => {
+    const list: MediaItem[] = (collection?.photos ?? []).map((photo) => ({
+      type: "photo",
+      url: photo.url,
+      width: photo.width,
+      height: photo.height,
+      contentType: photo.contentType,
+    }));
+    if (collection?.videoUrl) {
+      list.push({
+        type: "video",
+        url: collection.videoUrl,
+      });
+    }
+    return list;
+  }, [collection?.photos, collection?.videoUrl]);
+
+  // Infinite scroll: number of media items currently rendered
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
-  const photos = collection?.photos ?? [];
-  const visiblePhotos = photos.slice(0, visibleCount);
-  const hasMore = visibleCount < photos.length;
+  const visibleMedia = mediaItems.slice(0, visibleCount);
+  const hasMore = visibleCount < mediaItems.length;
 
   const loadMore = useCallback(() => {
-    setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, photos.length));
-  }, [photos.length]);
+    setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, mediaItems.length));
+  }, [mediaItems.length]);
 
   const openLightbox = (index: number) => {
     setCurrentImageIndex(index);
@@ -142,14 +242,14 @@ const CollectionDetail = () => {
   const goToPrevious = () => {
     if (!collection) return;
     setCurrentImageIndex((prev) =>
-      prev === 0 ? photos.length - 1 : prev - 1
+      prev === 0 ? mediaItems.length - 1 : prev - 1
     );
   };
 
   const goToNext = () => {
     if (!collection) return;
     setCurrentImageIndex((prev) =>
-      prev === photos.length - 1 ? 0 : prev + 1
+      prev === mediaItems.length - 1 ? 0 : prev + 1
     );
   };
 
@@ -243,15 +343,31 @@ const CollectionDetail = () => {
         )}
       </div>
 
-      {/* Photos grid — renders in batches via infinite scroll */}
+      {/* Media grid (photos + optional trailing video) — renders in batches via infinite scroll */}
       <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 pb-16">
-        {visiblePhotos.map((photo, index) => {
-          const altText = `${collection.title || "Portfolio"} - ${collection.client || "Gallery"} Makeup and Hair by Hristina Georgievska - Photo ${index + 1}`;
+        {visibleMedia.map((item, index) => {
+          const isVideo = item.type === "video";
+          const altText = isVideo
+            ? `${collection.title || "Portfolio"} - ${collection.client || "Gallery"} Makeup and Hair Video Reel`
+            : `${collection.title || "Portfolio"} - ${collection.client || "Gallery"} Makeup and Hair by Hristina Georgievska - Photo ${index + 1}`;
+
+          if (isVideo) {
+            return (
+              <VideoItem
+                key={`video-${item.url}-${index}`}
+                src={item.url}
+                index={index}
+                altText={altText}
+                onClick={() => openLightbox(index)}
+              />
+            );
+          }
+
           return (
             <PhotoItem
-              key={photo.url + index}
-              src={photo.url}
-              contentType={photo.contentType}
+              key={item.url + index}
+              src={item.url}
+              contentType={item.contentType}
               index={index}
               altText={altText}
               onClick={() => openLightbox(index)}
@@ -266,20 +382,21 @@ const CollectionDetail = () => {
       <Footer />
       <ScrollToTop />
 
-      {/* Lightbox for viewing individual photos */}
+      {/* Lightbox for viewing individual photos/video */}
       <Lightbox
         isOpen={lightboxOpen}
-        imageUrl={photos[currentImageIndex]?.url ?? ""}
-        imageWidth={photos[currentImageIndex]?.width}
-        imageHeight={photos[currentImageIndex]?.height}
-        contentType={photos[currentImageIndex]?.contentType}
+        imageUrl={mediaItems[currentImageIndex]?.url ?? ""}
+        isVideo={mediaItems[currentImageIndex]?.type === "video"}
+        imageWidth={mediaItems[currentImageIndex]?.type === "photo" ? (mediaItems[currentImageIndex] as MediaPhoto).width : undefined}
+        imageHeight={mediaItems[currentImageIndex]?.type === "photo" ? (mediaItems[currentImageIndex] as MediaPhoto).height : undefined}
+        contentType={mediaItems[currentImageIndex]?.type === "photo" ? (mediaItems[currentImageIndex] as MediaPhoto).contentType : undefined}
         imageDetails={{
           client: collection.client,
           name: collection.title,
           photographer: collection.photographer,
         }}
         currentIndex={currentImageIndex}
-        totalImages={photos.length}
+        totalImages={mediaItems.length}
         onClose={closeLightbox}
         onPrevious={goToPrevious}
         onNext={goToNext}
