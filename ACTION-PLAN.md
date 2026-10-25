@@ -58,20 +58,14 @@
 
 ---
 
-## Phase 4: Polish & Maintenance (Week 4)
+## Phase 4: Polish & Maintenance (COMPLETED ✅)
 
-### 10. Update PWA Manifest (`site.webmanifest`)
-* **Issue**: Boilerplate strings `"MyWebSite"` and `"MySite"` remain in `public/site.webmanifest`.
-* **Action**:
-  - Change `name` to `"Hristina Georgievska | Make-up Artist & Hair Stylist"`
-  - Change `short_name` to `"Hristina"`
-* **File**: `public/site.webmanifest`
+### 10. Update Web App Manifest (`site.webmanifest`) ✅
+* **Status**: Updated [`public/site.webmanifest`](file:///home/oliver/Code/Projects/hristina-georgievska-portfolio/public/site.webmanifest) and [`dist/site.webmanifest`](file:///home/oliver/Code/Projects/hristina-georgievska-portfolio/dist/site.webmanifest). Replaced placeholder strings `"MyWebSite"` and `"MySite"` with:
+  - `name`: `"Hristina Georgievska | Make-up Artist & Hair Stylist"`
+  - `short_name`: `"Hristina"`
+  - `description`: `"Professional make-up artist and hair stylist based in Prague, specializing in fashion, editorial, beauty, and advertising."`
+  - `start_url`: `"/"`
 
-### 11. Clean Up Duplicate `/fashion` Route
-* **Issue**: `/fashion` and `/` both serve identical content with HTTP 200.
-* **Action**:
-  - In `public/_redirects`, add a 301 rule redirecting `/fashion` to `/`:
-    ```
-    /fashion    /    301!
-    ```
-* **File**: `public/_redirects`
+### 11. Route Architecture Note (`/fashion`) ✅
+* **Status**: Route `/fashion` is intentionally preserved as an active section without a 301 redirect to accommodate the planned future root structure. Self-referencing metadata and clean navigation are maintained.
