@@ -7,8 +7,10 @@ import { ContentfulPicture } from "@/components/ContentfulPicture";
 import { Skeleton } from "@/components/ui/skeleton";
 import Lightbox from "@/components/Lightbox";
 import Header from "@/components/Header";
+import Navigation from "@/components/Navigation";
 import ScrollToTop from "@/components/ScrollToTop";
 import Footer from "@/components/Footer";
+import NotFound from "./NotFound";
 import { Helmet } from "react-helmet-async";
 
 const PAGE_SIZE = 20;
@@ -262,27 +264,38 @@ const CollectionDetail = () => {
     );
   }
 
-  // Error / not found
-  if (isError || !collection) {
+  // Network/API error
+  if (isError) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="max-w-5xl mx-auto px-4 py-16 text-center">
-          <p className="text-muted-foreground mb-6">
-            {isError
-              ? "Failed to load collection. Please try again later."
-              : "Collection not found."}
-          </p>
-          <button
-            onClick={() => navigate("/")}
-            className="inline-flex items-center gap-2 text-sm tracking-wider text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft size={16} />
-            Back to Gallery
-          </button>
+      <div className="min-h-screen bg-background flex flex-col justify-between">
+        <Helmet>
+          <title>Error Loading Collection | Hristina Georgievska</title>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+        <div>
+          <Header />
+          <Navigation activeSection="" />
+          <div className="max-w-5xl mx-auto px-4 py-16 text-center">
+            <p className="text-muted-foreground mb-6">
+              Failed to load collection. Please try again later.
+            </p>
+            <button
+              onClick={() => navigate("/")}
+              className="inline-flex items-center gap-2 px-6 py-2.5 text-xs uppercase tracking-[0.2em] font-medium text-foreground border border-foreground/30 hover:border-foreground transition-all duration-300 rounded-sm"
+            >
+              <ArrowLeft size={14} />
+              Return to Gallery
+            </button>
+          </div>
         </div>
+        <Footer />
       </div>
     );
+  }
+
+  // Collection not found (invalid or deleted slug)
+  if (!collection) {
+    return <NotFound />;
   }
 
   return (
