@@ -250,7 +250,7 @@ const CollectionDetail = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <Header />
+        <Header asH1={false} />
         <div className="max-w-5xl mx-auto px-4 py-8">
           <Skeleton className="h-8 w-48 mb-2" />
           <Skeleton className="h-5 w-32 mb-8" />
@@ -273,7 +273,7 @@ const CollectionDetail = () => {
           <meta name="robots" content="noindex, nofollow" />
         </Helmet>
         <div>
-          <Header />
+          <Header asH1={false} />
           <Navigation activeSection="" />
           <div className="max-w-5xl mx-auto px-4 py-16 text-center">
             <p className="text-muted-foreground mb-6">
@@ -343,7 +343,7 @@ const CollectionDetail = () => {
           {JSON.stringify(breadcrumbJsonLd)}
         </script>
       </Helmet>
-      <Header />
+      <Header asH1={false} />
 
       {/* Breadcrumb / back navigation */}
       <div className="max-w-5xl mx-auto px-4 pt-4 pb-2">

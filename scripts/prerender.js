@@ -50,6 +50,7 @@ const sections = [
     gridHtml: `
       <section>
         <h2 class="md:hidden font-serif text-2xl uppercase tracking-widest text-foreground text-center pt-6 pb-2">Beauty</h2>
+        <h2 class="sr-only">Beauty Portfolio</h2>
         <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 py-8">
           <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>
           <div class="aspect-[3/4] rounded-xl bg-muted/30"></div>
@@ -88,6 +89,7 @@ const sections = [
     description: "Get in touch with Prague-based make-up artist and hair stylist Hristina Georgievska for fashion, editorial, and commercial bookings.",
     gridHtml: `
       <section class="max-w-xl mx-auto px-4 pt-20 sm:pt-24 md:pt-28 pb-32 md:pb-44 text-center">
+        <h2 class="sr-only">Contact &amp; Booking Information</h2>
         <div class="h-9 w-72 sm:w-80 max-w-full mx-auto rounded bg-muted/30 animate-pulse"></div>
         <div class="mt-6 md:mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
           <div class="h-5 w-44 rounded bg-muted/30 animate-pulse"></div>
@@ -146,6 +148,19 @@ function generateNav(activeId) {
         </nav>
   `.trim();
 }
+
+const subpageHeaderHtml = `
+        <header class="pt-8 pb-3 md:pt-12 md:pb-6 text-center">
+          <div class="font-serif text-3xl md:text-4xl tracking-widest text-foreground min-h-[1.25em] leading-tight">
+            <a href="/" class="hover:opacity-90 transition-opacity">
+              HRISTINA <span class="font-bold">GEORGIEVSKA</span>
+            </a>
+          </div>
+          <p class="mt-2 text-sm tracking-[0.3em] text-muted-foreground uppercase">
+            Makeup Artist
+          </p>
+        </header>
+`.trim();
 
 // ---------------------------------------------------------------------------
 // 1. Pre-render Core Section Pages (/beauty, /video, /contact)
@@ -335,6 +350,12 @@ if (collections.length > 0) {
     // Strip fashion hero image preload
     html = html.replace(/<link\s+rel="preload"\s+as="image"[^>]*>\s*/gi, "");
 
+    // In collections, header should not be an <h1> to avoid duplicate H1s with the collection title
+    html = html.replace(
+      /<header class="pt-8 pb-3 md:pt-12 md:pb-6 text-center">[\s\S]*?<\/header>/,
+      subpageHeaderHtml
+    );
+
     // Default nav
     html = html.replace(
       /<nav class="flex justify-center py-3 md:py-6">[\s\S]*?<\/nav>/,
@@ -505,6 +526,12 @@ notFoundHtml = notFoundHtml.replace(
   generateNav("")
 );
 
+// Header without h1 for 404 page (h1 is reserved for "Page Not Found")
+notFoundHtml = notFoundHtml.replace(
+  /<header class="pt-8 pb-3 md:pt-12 md:pb-6 text-center">[\s\S]*?<\/header>/,
+  subpageHeaderHtml
+);
+
 // Main content
 const notFoundMain = `
       <main class="max-w-xl mx-auto px-4 pt-16 pb-24 text-center">
@@ -533,4 +560,16 @@ notFoundHtml = notFoundHtml.replace(/<main[\s\S]*?<\/main>/, notFoundMain);
 fs.writeFileSync(path.join(distDir, "404.html"), notFoundHtml, "utf8");
 fs.writeFileSync(path.join(publicDir, "404.html"), notFoundHtml, "utf8");
 console.log("Pre-rendered static 404.html (written to dist and public).");
+
+// ---------------------------------------------------------------------------
+// 5. Synchronize llms.txt & robots.txt to dist
+// ---------------------------------------------------------------------------
+if (fs.existsSync(path.join(publicDir, "llms.txt"))) {
+  fs.copyFileSync(path.join(publicDir, "llms.txt"), path.join(distDir, "llms.txt"));
+  console.log("Synchronized llms.txt to dist/llms.txt");
+}
+if (fs.existsSync(path.join(publicDir, "robots.txt"))) {
+  fs.copyFileSync(path.join(publicDir, "robots.txt"), path.join(distDir, "robots.txt"));
+  console.log("Synchronized robots.txt to dist/robots.txt");
+}
 

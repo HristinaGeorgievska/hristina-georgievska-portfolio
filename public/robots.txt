@@ -1,3 +1,4 @@
+# Search Engine Crawlers
 User-agent: Googlebot
 Allow: /
 
@@ -10,7 +11,29 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
+# AI Search & Retrieval Crawlers (Generative Engine Optimization)
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Default for all other user agents
 User-agent: *
 Allow: /
 
+# Sitemaps & Structured AI Knowledge
 Sitemap: https://www.hristinageorgievska.com/sitemap.xml
+# LLMs.txt for Generative Engine Optimization: https://www.hristinageorgievska.com/llms.txt

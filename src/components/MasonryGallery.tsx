@@ -22,11 +22,17 @@ const FASHION_HERO_FALLBACK: PhotoCollection = {
   category: "fashion",
 };
 
-const MobileSectionHeading = ({ category }: { category: string }) => (
-  <h2 className="md:hidden font-serif text-2xl uppercase tracking-widest text-foreground text-center pt-6 pb-2">
-    {categoryLabel[category] ?? category}
-  </h2>
-);
+const SectionHeading = ({ category }: { category: string }) => {
+  const label = categoryLabel[category] ?? category;
+  return (
+    <>
+      <h2 className="md:hidden font-serif text-2xl uppercase tracking-widest text-foreground text-center pt-6 pb-2">
+        {label}
+      </h2>
+      <h2 className="sr-only">{label} Portfolio</h2>
+    </>
+  );
+};
 
 const MasonryGallery = ({ category = "fashion" }: MasonryGalleryProps) => {
   const { data: collections = [], isLoading, isError } = useCollections(category);
@@ -35,7 +41,7 @@ const MasonryGallery = ({ category = "fashion" }: MasonryGalleryProps) => {
   if (isLoading) {
     return (
       <section>
-        <MobileSectionHeading category={category} />
+        <SectionHeading category={category} />
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 py-8">
           {category === "fashion" ? (
             <AnimatedGalleryItem item={FASHION_HERO_FALLBACK} index={0} />
@@ -54,7 +60,7 @@ const MasonryGallery = ({ category = "fashion" }: MasonryGalleryProps) => {
   if (isError || collections.length === 0) {
     return (
       <section>
-        <MobileSectionHeading category={category} />
+        <SectionHeading category={category} />
         <div className="max-w-5xl mx-auto px-4 py-16">
           <p className="text-center text-muted-foreground">
             {isError
@@ -68,7 +74,7 @@ const MasonryGallery = ({ category = "fashion" }: MasonryGalleryProps) => {
 
   return (
     <section>
-      <MobileSectionHeading category={category} />
+      <SectionHeading category={category} />
       <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 py-8">
         {collections.map((collection, index) => (
           <AnimatedGalleryItem

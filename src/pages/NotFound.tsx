@@ -27,7 +27,7 @@ const NotFound = () => {
       </Helmet>
 
       <div>
-        <Header />
+        <Header asH1={false} />
         <Navigation activeSection="" />
 
         <main className="max-w-xl mx-auto px-4 pt-16 pb-24 text-center">

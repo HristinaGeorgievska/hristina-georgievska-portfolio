@@ -23,6 +23,7 @@ const ContactSection = () => {
 
   return (
     <section className="px-4 pt-20 sm:pt-24 md:pt-28 pb-32 md:pb-44 flex flex-col items-center justify-center text-center">
+      <h2 className="sr-only">Contact &amp; Booking Information</h2>
       <div className="w-full max-w-xl mx-auto flex flex-col items-center text-center">
         {/* Main element: Email mailto link in serif font with lining numerals */}
         <a

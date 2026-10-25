@@ -43,30 +43,18 @@
 
 ---
 
-## Phase 3: Medium Priority (Week 2 - 3)
+## Phase 3: Medium Priority (COMPLETED ✅)
 
-### 7. Section-Specific Meta Descriptions & Titles
-* **Issue**: All pages share identical meta description.
-* **Action**:
-  - Customize meta descriptions in `scripts/prerender.js`:
-    - `/beauty`: *"Explore beauty and editorial makeup by Prague-based artist Hristina Georgievska. Clean skin, bold artistry, and precision hair styling."*
-    - `/video`: *"Commercial and editorial video productions featuring makeup and hair styling by Hristina Georgievska."*
-    - `/contact`: *"Get in touch with Prague-based make-up artist and hair stylist Hristina Georgievska for fashion, editorial, and commercial bookings."*
-* **File**: `scripts/prerender.js`, `src/pages/Index.tsx`
+### 7. Section-Specific Meta Descriptions & Titles ✅
+* **Status**: Implemented in [`src/pages/Index.tsx`](file:///home/oliver/Code/Projects/hristina-georgievska-portfolio/src/pages/Index.tsx) via `<Helmet>` and pre-rendered into static HTML in [`scripts/prerender.js`](file:///home/oliver/Code/Projects/hristina-georgievska-portfolio/scripts/prerender.js). Both client-side SPA navigation and direct server-rendered HTML provide unique, targeted `<title>`, `<meta name="description">`, `<link rel="canonical">`, and Open Graph/Twitter tags for `/` (Fashion), `/beauty`, `/video`, `/contact`, and `/advertising`.
 
-### 8. Implement `llms.txt` for Generative AI Search (GEO)
-* **Issue**: AI assistants (ChatGPT, Perplexity, Claude) lack structured plaintext data to cite.
-* **Action**:
-  - Create `public/llms.txt` summarizing Hristina's credentials, location (Prague), portfolio categories, publications, and contact info in markdown format.
-  - Reference `llms.txt` in `public/robots.txt`.
-* **File**: `public/llms.txt`, `public/robots.txt`
+### 8. Implement `llms.txt` for Generative AI Search (GEO) ✅
+* **Status**: Created [`public/llms.txt`](file:///home/oliver/Code/Projects/hristina-georgievska-portfolio/public/llms.txt) adhering to the standard specification. Summarizes Hristina's 20+ years in Prague, elite editorial credentials (Vogue, Elle, Harper's Bazaar, Marie Claire, Vanity Fair, Dolcevita), core service offerings, and direct contact details. Updated [`public/robots.txt`](file:///home/oliver/Code/Projects/hristina-georgievska-portfolio/public/robots.txt) to explicitly permit major AI search crawlers (`GPTBot`, `OAI-SearchBot`, `ChatGPT-User`, `ClaudeBot`, `PerplexityBot`, `Applebot-Extended`) and link to `llms.txt`.
 
-### 9. Fix Semantic Heading Hierarchy
-* **Issue**: Double `<h1>` on Collection Detail pages; missing visible desktop `<h2>` in gallery views.
-* **Action**:
-  - In `Header.tsx`, check whether the current route is a subpage. If on `/collection/*`, render the artist name as a stylized `<div>` or `<p>` with `role="heading" aria-level="2"` or keep `<h1>` reserved strictly for the collection title.
-  - In `MasonryGallery.tsx` and `BeautyGallery.tsx`, add an accessible semantic `<h2>` (`<h2 className="sr-only">Fashion Portfolio</h2>`).
-* **File**: `src/components/Header.tsx`, `src/components/MasonryGallery.tsx`
+### 9. Fix Semantic Heading Hierarchy ✅
+* **Status**: Resolved across all pages:
+  - **Eliminated duplicate `<h1>` on subpages**: In [`src/components/Header.tsx`](file:///home/oliver/Code/Projects/hristina-georgievska-portfolio/src/components/Header.tsx), artist name automatically renders as a non-heading link on `/collection/*` subpages (or when `asH1={false}`), reserving `<h1>` exclusively for the collection title (`{collection.title}`) and 404 page ("Page Not Found"). Both React runtime and static pre-rendering in `scripts/prerender.js` enforce this.
+  - **Added accessible desktop `<h2>` landmarks**: Added `<h2 className="sr-only">...</h2>` to [`src/components/MasonryGallery.tsx`](file:///home/oliver/Code/Projects/hristina-georgievska-portfolio/src/components/MasonryGallery.tsx), [`src/components/ContactSection.tsx`](file:///home/oliver/Code/Projects/hristina-georgievska-portfolio/src/components/ContactSection.tsx), [`index.html`](file:///home/oliver/Code/Projects/hristina-georgievska-portfolio/index.html), and [`scripts/prerender.js`](file:///home/oliver/Code/Projects/hristina-georgievska-portfolio/scripts/prerender.js) ensuring valid H2 landmarks exist across all viewports for screen readers and search crawlers. Verified via unit test suite in [`src/test/Header.test.tsx`](file:///home/oliver/Code/Projects/hristina-georgievska-portfolio/src/test/Header.test.tsx).
 
 ---
 
