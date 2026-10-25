@@ -298,6 +298,37 @@ const CollectionDetail = () => {
     return <NotFound />;
   }
 
+  const categoryName = collection.category
+    ? collection.category.charAt(0).toUpperCase() + collection.category.slice(1)
+    : "Portfolio";
+  const categoryPath = collection.category === "fashion" ? "" : `/${collection.category || ""}`;
+  const canonicalUrl = `https://www.hristinageorgievska.com/collection/${slug}`;
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://www.hristinageorgievska.com",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: categoryName,
+        item: `https://www.hristinageorgievska.com${categoryPath}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: collection.title,
+        item: canonicalUrl,
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
@@ -306,8 +337,11 @@ const CollectionDetail = () => {
           name="description"
           content={collection.description || `View the ${collection.title} gallery. Makeup and hair styling by Prague-based artist Hristina Georgievska.`}
         />
-        <link rel="canonical" href={`https://www.hristinageorgievska.com/collection/${slug}`} />
-        <meta property="og:url" content={`https://www.hristinageorgievska.com/collection/${slug}`} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbJsonLd)}
+        </script>
       </Helmet>
       <Header />
 

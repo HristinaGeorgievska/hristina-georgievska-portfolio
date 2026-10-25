@@ -93,6 +93,17 @@ const sections = [
           <div class="h-5 w-44 rounded bg-muted/30 animate-pulse"></div>
           <div class="h-5 w-36 rounded bg-muted/30 animate-pulse"></div>
         </div>
+        <div class="mt-12 sm:mt-16 pt-8 border-t border-border/40 w-full max-w-lg mx-auto">
+          <p class="text-xs uppercase tracking-[0.25em] text-muted-foreground font-medium mb-3">
+            Selected Editorial &amp; Commercial Features
+          </p>
+          <p class="text-sm text-foreground/80 font-light leading-relaxed tracking-wide">
+            Vogue &bull; Elle &bull; Harper&apos;s Bazaar &bull; Marie Claire &bull; Vanity Fair Italia &bull; Dolcevita
+          </p>
+          <p class="mt-3 text-xs text-muted-foreground/80 font-light leading-relaxed max-w-md mx-auto">
+            Based in Prague with 20+ years of international experience in fashion, editorial, advertising, and video productions.
+          </p>
+        </div>
       </section>
     `,
   },
@@ -233,6 +244,7 @@ async function fetchCollections() {
       return {
         slug: item.fields.slug,
         title: item.fields.title || "Portfolio Collection",
+        category: item.fields.category || "fashion",
         client: item.fields.client || null,
         photographer: item.fields.photographer || null,
         description: item.fields.description || null,
@@ -355,6 +367,42 @@ if (collections.length > 0) {
     `.trim();
 
     html = html.replace(/<main[\s\S]*?<\/main>/, mainContent);
+
+    // Inject BreadcrumbList Schema.org JSON-LD into <head>
+    const categoryName = col.category
+      ? col.category.charAt(0).toUpperCase() + col.category.slice(1)
+      : "Portfolio";
+    const categoryPath = col.category === "fashion" ? "" : `/${col.category || ""}`;
+
+    const breadcrumbJson = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://www.hristinageorgievska.com",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: categoryName,
+          item: `https://www.hristinageorgievska.com${categoryPath}`,
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: col.title,
+          item: colUrl,
+        },
+      ],
+    });
+
+    html = html.replace(
+      /<\/head>/,
+      `    <script type="application/ld+json">\n      ${breadcrumbJson}\n    </script>\n  </head>`
+    );
 
     fs.writeFileSync(path.join(colDir, "index.html"), html, "utf8");
   }

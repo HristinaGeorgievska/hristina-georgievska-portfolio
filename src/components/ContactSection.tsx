@@ -59,6 +59,19 @@ const ContactSection = () => {
             <span className="absolute bottom-0 left-0 right-[0.1em] h-[1px] bg-foreground scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100 transition-transform duration-300 origin-left" />
           </a>
         </div>
+
+        {/* Editorial credits & E-E-A-T trust signals */}
+        <div className="mt-12 sm:mt-16 pt-8 border-t border-border/40 w-full max-w-lg mx-auto">
+          <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground font-medium mb-3">
+            Selected Editorial &amp; Commercial Features
+          </p>
+          <p className="text-sm text-foreground/80 font-light leading-relaxed tracking-wide">
+            Vogue &bull; Elle &bull; Harper&apos;s Bazaar &bull; Marie Claire &bull; Vanity Fair Italia &bull; Dolcevita
+          </p>
+          <p className="mt-3 text-xs text-muted-foreground/80 font-light leading-relaxed max-w-md mx-auto">
+            Based in Prague with 20+ years of international experience in fashion, editorial, advertising, and video productions.
+          </p>
+        </div>
       </div>
     </section>
   );

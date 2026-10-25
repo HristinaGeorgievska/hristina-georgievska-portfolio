@@ -30,15 +30,70 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "Person",
-        "name": "Hristina Georgievska",
-        "jobTitle": "Make-up Artist & Hair Stylist",
-        "url": "https://www.hristinageorgievska.com",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Prague",
-          "addressCountry": "CZ"
-        }
+        "@graph": [
+          {
+            "@type": "Person",
+            "@id": "https://www.hristinageorgievska.com/#person",
+            "name": "Hristina Georgievska",
+            "jobTitle": "Make-up Artist & Hair Stylist",
+            "url": "https://www.hristinageorgievska.com",
+            "image": "https://www.hristinageorgievska.com/og-image.jpg",
+            "description": "Professional make-up artist and hair stylist with 20+ years of experience in fashion, editorial, and commercial productions. Based in Prague.",
+            "telephone": "+420602367517",
+            "email": "hristina.georgievska1@gmail.com",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Prague",
+              "addressCountry": "CZ"
+            },
+            "sameAs": [
+              "https://instagram.com/hristinageorgievska"
+            ],
+            "knowsAbout": [
+              "Fashion Makeup",
+              "Editorial Makeup",
+              "Commercial Makeup",
+              "Hair Styling",
+              "Beauty Styling",
+              "Vogue Editorial",
+              "Harper's Bazaar Editorial",
+              "Elle Editorial"
+            ]
+          },
+          {
+            "@type": "ProfessionalService",
+            "@id": "https://www.hristinageorgievska.com/#service",
+            "name": "Hristina Georgievska Makeup & Hair",
+            "url": "https://www.hristinageorgievska.com",
+            "logo": "https://www.hristinageorgievska.com/favicon-96x96.png",
+            "image": "https://www.hristinageorgievska.com/og-image.jpg",
+            "telephone": "+420602367517",
+            "email": "hristina.georgievska1@gmail.com",
+            "priceRange": "$$$",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Prague",
+              "addressCountry": "CZ"
+            },
+            "areaServed": [
+              {
+                "@type": "City",
+                "name": "Prague"
+              },
+              {
+                "@type": "Country",
+                "name": "Czech Republic"
+              },
+              {
+                "@type": "Continent",
+                "name": "Europe"
+              }
+            ],
+            "sameAs": [
+              "https://instagram.com/hristinageorgievska"
+            ]
+          }
+        ]
       }
     </script>
     <link rel="preconnect" href="https://images.ctfassets.net" crossorigin />
